@@ -62,7 +62,8 @@ Full Chinese (zh-cn) translation support for all settings and commands. VSCode w
 ![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/JohnstonCode/svn-scm/main.yml?branch=master)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
-[![Known Vulnerabilities](https://snyk.io/test/github/JohnstonCode/svn-scm/badge.svg)](https://snyk.io/test/github/JohnstonCode/svn-scm)
+[![CodeQL Security Scan](https://github.com/NavAI-B/svn-scm/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/NavAI-B/svn-scm/actions/workflows/github-code-scanning/codeql)
+[![GitHub Security](https://img.shields.io/badge/GitHub-Secured-2ea44f?logo=github)](https://github.com/NavAI-B/svn-scm/security)
 
 # Prerequisites
 
