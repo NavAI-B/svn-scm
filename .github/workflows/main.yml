@@ -46,7 +46,11 @@ jobs:
         run: |
           Invoke-WebRequest -Uri "https://sliksvn.com/pub/Slik-Subversion-1.14.5-x64.zip" -OutFile svn.zip
           Expand-Archive svn.zip -DestinationPath C:\svn
-          echo "C:\svn" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          $svnBin = Get-ChildItem -Path C:\svn -Recurse -Filter "svn.exe" | Select-Object -First 1
+          $svnDir = Split-Path $svnBin.FullName
+          echo "$svnDir" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "SVN path: $svnDir"
+          & "$svnDir\svn.exe" --version
 
       - name: Compile sources for tests
         run: npm run test-compile
