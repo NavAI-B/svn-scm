@@ -83,8 +83,7 @@ async function _activate(context: ExtensionContext, disposables: Disposable[]) {
     try {
       await init(context, outputChannel, disposables);
     } catch (err: unknown) {
-      const errMessage =
-        err instanceof Error ? err.message : String(err);
+      const errMessage = err instanceof Error ? err.message : String(err);
       if (!/Svn installation not found/.test(errMessage || "")) {
         throw err;
       }
@@ -161,6 +160,5 @@ export async function activate(context: ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 function deactivate() {}
 exports.deactivate = deactivate;

@@ -52,7 +52,7 @@ function replaceVariables(
  */
 function execCommand(command: string, cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    cp.exec(command, { cwd, timeout: 30000 }, (error) => {
+    cp.exec(command, { cwd, timeout: 30000 }, error => {
       if (error) {
         reject(error);
       } else {
@@ -86,7 +86,13 @@ export async function runHook(
     }
 
     for (const file of files) {
-      const resolvedCommand = replaceVariables(hook.command, file, files, cwd, svnPath);
+      const resolvedCommand = replaceVariables(
+        hook.command,
+        file,
+        files,
+        cwd,
+        svnPath
+      );
       try {
         await execCommand(resolvedCommand, cwd);
       } catch (error) {

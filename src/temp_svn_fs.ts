@@ -77,7 +77,6 @@ class TempSvnFs implements FileSystemProvider, Disposable {
   }
 
   watch(_resource: Uri): Disposable {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     return new Disposable(() => {});
   }
 

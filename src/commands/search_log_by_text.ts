@@ -51,7 +51,11 @@ export class SearchLogByText extends Command {
 
         return new Promise<void>((resolve, reject) => {
           proc.on("exit", (code: number) => {
-            code === 0 ? resolve() : reject();
+            if (code === 0) {
+              resolve();
+            } else {
+              reject();
+            }
           });
         });
       }

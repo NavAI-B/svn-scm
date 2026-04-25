@@ -25,13 +25,13 @@ export function run(): Promise<void> {
             if (failures > 0) {
               e(new Error(`${failures} tests failed.`));
             } else {
-            c();
-          }
-        });
-      } catch (err) {
-        e(err);
-      }
-    })
-    .catch(e);
+              c();
+            }
+          });
+        } catch (err) {
+          e(err);
+        }
+      })
+      .catch(e);
   });
 }

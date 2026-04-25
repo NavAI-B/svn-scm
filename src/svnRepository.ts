@@ -51,14 +51,14 @@ export class Repository {
     policy: ConstructorPolicy
   ) {
     if (policy === ConstructorPolicy.LateInit) {
-      return ((async (): Promise<Repository> => {
+      return (async (): Promise<Repository> => {
         return this;
-      })() as unknown) as Repository;
+      })() as unknown as Repository;
     }
-    return ((async (): Promise<Repository> => {
+    return (async (): Promise<Repository> => {
       await this.updateInfo();
       return this;
-    })() as unknown) as Repository;
+    })() as unknown as Repository;
   }
 
   public async updateInfo() {
@@ -185,9 +185,12 @@ export class Repository {
     this._infoCache[file] = await parseInfoXml(result.stdout);
 
     // Cache for 2 minutes
-    setTimeout(() => {
-      this.resetInfoCache(file);
-    }, 2 * 60 * 1000);
+    setTimeout(
+      () => {
+        this.resetInfoCache(file);
+      },
+      2 * 60 * 1000
+    );
 
     return this._infoCache[file];
   }
@@ -257,7 +260,7 @@ export class Repository {
     let paths: ISvnPath[];
     try {
       paths = await parseDiffXml(result.stdout);
-    } catch (err) {
+    } catch {
       return [];
     }
 
@@ -357,9 +360,8 @@ export class Repository {
         }
       }
     } else {
-      const svnEncoding: string | undefined = configuration.get<string>(
-        "default.encoding"
-      );
+      const svnEncoding: string | undefined =
+        configuration.get<string>("default.encoding");
       if (svnEncoding) {
         encoding = svnEncoding;
       }
@@ -476,11 +478,23 @@ export class Repository {
         sendedFiles === 1 ? "file" : "files"
       } commited`;
 
-      await runHook("post", "commit", files, this.workspaceRoot, this.svn.svnPath);
+      await runHook(
+        "post",
+        "commit",
+        files,
+        this.workspaceRoot,
+        this.svn.svnPath
+      );
       return `${filesMessage}: revision ${matches[1]}.`;
     }
 
-    await runHook("post", "commit", files, this.workspaceRoot, this.svn.svnPath);
+    await runHook(
+      "post",
+      "commit",
+      files,
+      this.workspaceRoot,
+      this.svn.svnPath
+    );
     return result.stdout;
   }
 
@@ -596,7 +610,7 @@ export class Repository {
             ]);
 
             resolve([trunkLayout]);
-          } catch (error) {
+          } catch {
             resolve([]);
           }
         })
@@ -629,7 +643,7 @@ export class Repository {
               .map((i: string) => tree + "/" + i);
 
             resolve(list);
-          } catch (error) {
+          } catch {
             resolve([]);
           }
         })
@@ -693,13 +707,30 @@ export class Repository {
   public async revert(files: string[], depth: keyof typeof SvnDepth) {
     await runHook("pre", "revert", files, this.workspaceRoot, this.svn.svnPath);
     const relativeFiles = files.map(file => this.removeAbsolutePath(file));
-    const result = await this.exec(["revert", "--depth", depth, ...relativeFiles]);
-    await runHook("post", "revert", files, this.workspaceRoot, this.svn.svnPath);
+    const result = await this.exec([
+      "revert",
+      "--depth",
+      depth,
+      ...relativeFiles
+    ]);
+    await runHook(
+      "post",
+      "revert",
+      files,
+      this.workspaceRoot,
+      this.svn.svnPath
+    );
     return result.stdout;
   }
 
   public async update(ignoreExternals: boolean = true): Promise<string> {
-    await runHook("pre", "update", [this.workspaceRoot], this.workspaceRoot, this.svn.svnPath);
+    await runHook(
+      "pre",
+      "update",
+      [this.workspaceRoot],
+      this.workspaceRoot,
+      this.svn.svnPath
+    );
     const args = ["update"];
 
     if (ignoreExternals) {
@@ -710,7 +741,13 @@ export class Repository {
 
     this.resetInfoCache();
 
-    await runHook("post", "update", [this.workspaceRoot], this.workspaceRoot, this.svn.svnPath);
+    await runHook(
+      "post",
+      "update",
+      [this.workspaceRoot],
+      this.workspaceRoot,
+      this.svn.svnPath
+    );
 
     const message = result.stdout.trim().split(/\r?\n/).pop();
 
@@ -773,7 +810,13 @@ export class Repository {
 
     const result = await this.exec(args);
 
-    await runHook("post", "remove", files, this.workspaceRoot, this.svn.svnPath);
+    await runHook(
+      "post",
+      "remove",
+      files,
+      this.workspaceRoot,
+      this.svn.svnPath
+    );
     return result.stdout;
   }
 

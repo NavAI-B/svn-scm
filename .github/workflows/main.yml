@@ -33,6 +33,18 @@ jobs:
         run: npm ci
         shell: bash
 
+      - name: Install SVN (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
+      - name: Install SVN (macOS)
+        if: runner.os == 'macOS'
+        run: brew install subversion
+
+      - name: Install SVN (Windows)
+        if: runner.os == 'Windows'
+        run: choco install svn
+
       - name: Compile sources for tests
         run: npm run test-compile
 

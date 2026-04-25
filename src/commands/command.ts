@@ -54,7 +54,7 @@ export abstract class Command implements Disposable {
   public abstract execute(...args: any[]): any;
 
   public dispose() {
-    this._disposable && this._disposable.dispose(); // tslint:disable-line
+    this._disposable?.dispose();
   }
 
   private createRepositoryCommand(
@@ -409,7 +409,7 @@ export abstract class Command implements Disposable {
       if (await exists(tempFile)) {
         try {
           await unlink(tempFile);
-        } catch (err) {
+        } catch {
           // TODO(cjohnston)//log error
         }
       }
