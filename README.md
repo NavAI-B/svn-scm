@@ -1,9 +1,63 @@
-# Subversion source control for VS Code
+# Subversion source control for VS Code (Modified)
+
+> **This is a modified version** of [johnstoncode.svn-scm](https://github.com/JohnstonCode/svn-scm) with some additional features I need for my work, and the project dependencies have been updated to make building easier in newer versions of VSCode and Node.js.
+
+## What's Different
+
+### 1. Ignore VSCode Exclude Rules
+
+Two new settings allow you to bypass VSCode's built-in file exclusion rules, so SVN can manage files that VSCode or other tools normally hides:
+
+- **`svn.sourceControl.ignoreFilesExclude`** — Ignore VSCode's `files.exclude` settings. Useful when development tools (e.g., Unity) hide certain files (like `.meta` files) in the explorer but you still need to manage them in SVN.
+- **`svn.sourceControl.ignoreSearchExclude`** — Ignore VSCode's `search.exclude` settings.
+
+### 2. SVN Command Hooks
+
+A new simple hook system allows you to run custom commands before or after SVN operations. This is especially useful for tools like Unity that generate companion files (e.g., `.meta` files) that must be managed alongside the original files.
+
+**Setting:** `svn.hooks.commands`
+
+Each hook entry has:
+- **`hook`** — Timing + command name, e.g., `preAdd`, `postAdd`, `preRemove`, `postRemove`, `preCommit`, `postCommit`, `preRevert`, `postRevert`, `preUpdate`, `postUpdate`
+- **`command`** — The shell command to execute. Supports variable substitution.
+
+**Supported Variables:**
+
+| Variable | Description |
+|---|---|
+| `$(svn)` | Full svn executable path |
+| `$(file)` | Full file path |
+| `$(fileName)` | File name with extension |
+| `$(fileBaseName)` | File name without extension |
+| `$(fileExt)` | File extension (with dot) |
+| `$(fileDir)` | Directory of the file |
+| `$(files)` | All file paths (space-separated, quoted) |
+| `$(cwd)` | Working directory |
+
+**Example (Unity `.meta` file auto management):**
+```json
+"svn.hooks.commands": [
+    {
+        "hook": "postAdd",
+        "command": "\"$(svn)\" add \"$(file).meta\""
+    },
+    {
+        "hook": "preRemove",
+        "command": "\"$(svn)\" del \"$(file).meta\""
+    }
+]
+```
+
+### 3. Localization (i18n)
+
+Full Chinese (zh-cn) translation support for all settings and commands. VSCode will automatically display the appropriate language based on your locale setting.
+
+---
 
 ![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/johnstoncode.svn-scm)
 ![Visual Studio Marketplace Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/johnstoncode.svn-scm)
 ![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/johnstoncode.svn-scm)
-![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/r/johnstoncode.svn-scm)
+![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/rating/johnstoncode.svn-scm)
 
 ![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/JohnstonCode/svn-scm/main.yml?branch=master)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
