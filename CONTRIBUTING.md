@@ -6,7 +6,7 @@ Before you contribute to this project, please open an issue beforehand to discus
 
 Requirements
 * [Git](https://git-scm.com/)
-* [NodeJs](https://nodejs.org/) >= 20.0.0
+* [NodeJs](https://nodejs.org/) >= 22.0.0
 * [yarn](https://classic.yarnpkg.com/lang/en/) >= 1.22 (optional, npm also works)
 
 First you will need to fork the project
