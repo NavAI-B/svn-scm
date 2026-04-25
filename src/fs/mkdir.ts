@@ -1,4 +1,3 @@
-import { mkdir as fsMkdir } from "original-fs";
-import { promisify } from "util";
+import { promises as fsp } from "original-fs";
 
-export const mkdir = promisify(fsMkdir);
+export const mkdir = fsp.mkdir;

@@ -96,9 +96,10 @@ export class Checkout extends Command {
           await sourceControlManager.svn.exec(parentPath, args, opt);
         });
         break;
-      } catch (err) {
+      } catch (err: unknown) {
+        const svnErr = err as any;
         if (
-          err.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
+          svnErr.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
           attempt <= 3
         ) {
           const auth = (await commands.executeCommand(

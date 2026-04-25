@@ -1,4 +1,3 @@
-import { rmdir as fsRmdir } from "original-fs";
-import { promisify } from "util";
+import { promises as fsp } from "original-fs";
 
-export const rmdir = promisify(fsRmdir);
+export const rmdir = fsp.rmdir;

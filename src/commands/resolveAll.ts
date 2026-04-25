@@ -31,8 +31,8 @@ export class ResolveAll extends Command {
           choice.label
         );
         window.showInformationMessage(response);
-      } catch (error) {
-        window.showErrorMessage(error.stderr);
+      } catch (error: unknown) {
+        window.showErrorMessage((error as any).stderr);
       }
     }
   }

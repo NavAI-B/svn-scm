@@ -1,4 +1,3 @@
-import { readdir as fsReaddir } from "original-fs";
-import { promisify } from "util";
+import { promises as fsp } from "original-fs";
 
-export const readdir = promisify(fsReaddir);
+export const readdir = fsp.readdir;

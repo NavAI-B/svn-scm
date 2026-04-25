@@ -81,7 +81,7 @@ export class Repository implements IRemoteRepository {
   public remoteChangedFiles: number = 0;
   public isIncomplete: boolean = false;
   public needCleanUp: boolean = false;
-  private remoteChangedUpdateInterval?: NodeJS.Timer;
+  private remoteChangedUpdateInterval?: ReturnType<typeof setInterval>;
   private deletedUris: Uri[] = [];
   private canSaveAuth: boolean = false;
 
@@ -1102,8 +1102,13 @@ export class Repository implements IRemoteRepository {
         }
 
         return result;
-      } catch (err) {
-        if (err.svnErrorCode === svnErrorCodes.NotASvnRepository) {
+      } catch (err: unknown) {
+        if (
+          typeof err === "object" &&
+          err !== null &&
+          "svnErrorCode" in err &&
+          (err as any).svnErrorCode === svnErrorCodes.NotASvnRepository
+        ) {
           this.state = RepositoryState.Disposed;
         }
 
@@ -1136,15 +1141,16 @@ export class Repository implements IRemoteRepository {
         const result = await runOperation();
         this.saveAuth();
         return result;
-      } catch (err) {
+      } catch (err: unknown) {
+        const svnErr = err as any;
         if (
-          err.svnErrorCode === svnErrorCodes.RepositoryIsLocked &&
+          svnErr.svnErrorCode === svnErrorCodes.RepositoryIsLocked &&
           attempt <= 10
         ) {
           // quatratic backoff
           await timeout(Math.pow(attempt, 2) * 50);
         } else if (
-          err.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
+          svnErr.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
           attempt <= 1 + accounts.length
         ) {
           // First attempt load all stored auths
@@ -1159,7 +1165,7 @@ export class Repository implements IRemoteRepository {
             this.password = accounts[index].password;
           }
         } else if (
-          err.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
+          svnErr.svnErrorCode === svnErrorCodes.AuthorizationFailed &&
           attempt <= 3 + accounts.length
         ) {
           const result = await this.promptAuth();

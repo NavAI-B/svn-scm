@@ -31,11 +31,13 @@ export class SwitchBranch extends Command {
       } else {
         try {
           await repository.switchBranch(branch.path);
-        } catch (error) {
+        } catch (error: unknown) {
+          const err = error as any;
           if (
-            typeof error === "object" &&
-            error.hasOwnProperty("stderrFormated") &&
-            error.stderrFormated.includes("ignore-ancestry")
+            typeof err === "object" &&
+            err !== null &&
+            "stderrFormated" in err &&
+            err.stderrFormated.includes("ignore-ancestry")
           ) {
             const answer = await window.showErrorMessage(
               "Seems like these branches don't have a common ancestor. " +

@@ -1,4 +1,3 @@
-import { readFile as fsReadFile } from "original-fs";
-import { promisify } from "util";
+import { promises as fsp } from "original-fs";
 
-export const readFile = promisify(fsReadFile);
+export const readFile = fsp.readFile;

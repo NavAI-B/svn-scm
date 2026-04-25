@@ -5,10 +5,10 @@
     "version": "2.17.0",
     "publisher": "johnstoncode",
     "engines": {
-        "vscode": "^1.53.0"
+        "vscode": "^1.117.0"
     },
     "private": true,
-    "enableProposedApi": false,
+    "enabledApiProposals": [],
     "icon": "images/subversion.png",
     "homepage": "https://github.com/JohnstonCode/svn-scm/blob/master/README.md",
     "repository": {
@@ -34,14 +34,14 @@
     "main": "./out/extension",
     "scripts": {
         "build": "yarn run build:ts && yarn run build:css",
-        "build:css": "yarn node-sass scss/ -o css/ --output-style compressed",
+        "build:css": "yarn sass scss/:css/ --style compressed --no-source-map",
         "build:ts": "webpack --mode production",
         "compile": "webpack --mode development --watch",
         "lint": "eslint \"src/**/*.ts\"",
         "lint:fix": "yarn run lint --fix",
         "organize": "node ./out/tools/organize.js",
         "semantic-release": "semantic-release --yarn",
-        "style-check": "yarn prettylint 'src/**/*.ts'",
+        "style-check": "yarn prettier --check \"src/**/*.ts\"",
         "style-fix": "yarn prettier --write \"src/**/*.ts\"",
         "test": "node ./out/test/runTest.js",
         "test-compile": "tsc -p ./",
@@ -54,42 +54,46 @@
         "jschardet": "^3.0.0"
     },
     "devDependencies": {
-        "@semantic-release/changelog": "^5.0.1",
-        "@semantic-release/git": "^9.0.0",
-        "@types/glob": "^7.1.4",
-        "@types/mocha": "^9.0.0",
-        "@types/node": "^12.11.7",
-        "@types/semver": "^7.3.8",
-        "@types/tmp": "0.2.1",
-        "@types/vscode": "1.53.0",
-        "@types/xml2js": "^0.4.9",
-        "@typescript-eslint/eslint-plugin": "^4.29.0",
-        "@typescript-eslint/parser": "^4.29.0",
-        "chardet": "^1.3.0",
-        "dayjs": "^1.10.6",
+        "@semantic-release/changelog": "^6.0.3",
+        "@semantic-release/git": "^10.0.1",
+        "@types/glob": "^8.1.0",
+        "@types/mocha": "^10.0.0",
+        "@types/node": "^22.0.0",
+        "@types/semver": "^7.7.0",
+        "@types/tmp": "^0.2.6",
+        "@types/vscode": "1.116.0",
+        "@types/xml2js": "^0.4.14",
+        "@typescript-eslint/eslint-plugin": "^8.30.0",
+        "@typescript-eslint/parser": "^8.30.0",
+        "chardet": "^2.1.0",
+        "dayjs": "^1.11.13",
         "decache": "^4.6.0",
-        "eslint": "^7.32.0",
-        "eslint-config-prettier": "^7.2.0",
-        "eslint-plugin-prettier": "^3.4.0",
-        "glob": "^7.1.7",
+        "eslint": "^9.24.0",
+        "eslint-config-prettier": "^10.1.2",
+        "eslint-plugin-prettier": "^5.4.0",
+        "glob": "^11.0.0",
         "milligram": "^1.4.1",
-        "minimatch": "^3.0.4",
-        "mocha": "^9.0.3",
-        "node-sass": "^6.0.1",
-        "original-fs": "^1.0.0",
-        "ovsx": "0.2.0",
-        "prettier": "^2.2.1",
-        "prettylint": "^1.0.0",
-        "semantic-release": "^17.4.4",
-        "semantic-release-vsce": "^4.0.1",
-        "semver": "^7.3.5",
-        "tmp": "0.2.1",
-        "ts-loader": "^9.2.4",
-        "typescript": "^4.3.5",
-        "vscode-test": "^1.6.1",
-        "webpack": "^5.48.0",
-        "webpack-cli": "^4.7.2",
-        "xml2js": "^0.4.19"
+        "minimatch": "^10.0.0",
+        "mocha": "^11.1.0",
+        "original-fs": "^1.2.0",
+        "ovsx": "^0.10.2",
+        "prettier": "^3.5.0",
+        "sass": "^1.87.0",
+        "semantic-release": "^25.0.3",
+        "semantic-release-vsce": "^6.1.3",
+        "semver": "^7.7.0",
+        "tmp": "^0.2.3",
+        "ts-loader": "^9.5.2",
+        "typescript": "^6.0.3",
+        "@vscode/test-electron": "^2.5.2",
+        "webpack": "^5.99.0",
+        "webpack-cli": "^6.0.0",
+        "xml2js": "^0.6.2"
+    },
+    "overrides": {
+        "diff": "^8.0.2",
+        "serialize-javascript": "^7.0.0",
+        "uuid": "^14.0.0"
     },
     "config": {
         "commitizen": {
@@ -110,23 +114,27 @@
             "explorer": [
                 {
                     "id": "svn",
-                    "name": "SVN"
+                    "name": "SVN",
+                    "icon": "icons/subversion-logo.svg"
                 }
             ],
             "svnActivity": [
                 {
                     "id": "repolog",
                     "name": "Repositories",
+                    "icon": "icons/subversion-logo.svg",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {
                     "id": "itemlog",
                     "name": "File History",
+                    "icon": "icons/subversion-logo.svg",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
                 {
                     "id": "branchchanges",
                     "name": "Branch Changes",
+                    "icon": "icons/subversion-logo.svg",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 }
             ]

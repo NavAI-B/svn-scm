@@ -1,4 +1,3 @@
-import { writeFile as fsWriteFile } from "original-fs";
-import { promisify } from "util";
+import { promises as fsp } from "original-fs";
 
-export const writeFile = promisify(fsWriteFile);
+export const writeFile = fsp.writeFile;

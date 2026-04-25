@@ -1,4 +1,3 @@
-import { stat as fsStat } from "original-fs";
-import { promisify } from "util";
+import { promises as fsp } from "original-fs";
 
-export const stat = promisify(fsStat);
+export const stat = fsp.stat;

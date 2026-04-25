@@ -1,7 +1,10 @@
-import { access } from "original-fs";
+import { promises as fsp } from "original-fs";
 
-export function exists(path: string): Promise<boolean> {
-  return new Promise((resolve, _reject) => {
-    access(path, err => (err ? resolve(false) : resolve(true)));
-  });
+export async function exists(path: string): Promise<boolean> {
+  try {
+    await fsp.access(path);
+    return true;
+  } catch {
+    return false;
+  }
 }

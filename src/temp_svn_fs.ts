@@ -57,7 +57,7 @@ export type Entry = File | Directory;
 class TempSvnFs implements FileSystemProvider, Disposable {
   private _emitter = new EventEmitter<FileChangeEvent[]>();
   private _bufferedEvents: FileChangeEvent[] = [];
-  private _fireSoonHandler?: NodeJS.Timer;
+  private _fireSoonHandler?: ReturnType<typeof setTimeout>;
   private _root = new Directory("");
   private _disposables: Disposable[] = [];
 

@@ -1,4 +1,3 @@
-import { unlink as fsUnlink } from "original-fs";
-import { promisify } from "util";
+import { promises as fsp } from "original-fs";
 
-export const unlink = promisify(fsUnlink);
+export const unlink = fsp.unlink;

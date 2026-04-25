@@ -68,9 +68,9 @@ export class Commit extends Command {
         const result = await repository.commitFiles(message, paths);
         window.showInformationMessage(result);
         repository.inputBox.value = "";
-      } catch (error) {
+      } catch (error: unknown) {
         console.error(error);
-        window.showErrorMessage(error.stderrFormated);
+        window.showErrorMessage((error as any).stderrFormated);
       }
     });
   }

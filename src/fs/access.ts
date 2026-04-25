@@ -1,10 +1,13 @@
-import { access as fsAccess } from "original-fs";
+import { promises as fsp } from "original-fs";
 
-export function access(
+export async function access(
   path: string,
   mode: number | undefined
 ): Promise<boolean> {
-  return new Promise((resolve, _reject) => {
-    fsAccess(path, mode, err => (err ? resolve(false) : resolve(true)));
-  });
+  try {
+    await fsp.access(path, mode);
+    return true;
+  } catch {
+    return false;
+  }
 }

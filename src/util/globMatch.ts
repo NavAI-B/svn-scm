@@ -1,9 +1,9 @@
-import * as minimatch from "minimatch";
+import { Minimatch, minimatch, type MinimatchOptions } from "minimatch";
 
 export function matchAll(
   path: string,
   patterns: string[],
-  opts: minimatch.IOptions = {}
+  opts: MinimatchOptions = {}
 ): boolean {
   let match = false;
 
@@ -23,5 +23,5 @@ export function matchAll(
 }
 
 export function match(pattern: string) {
-  return new minimatch.Minimatch(pattern);
+  return new Minimatch(pattern);
 }
