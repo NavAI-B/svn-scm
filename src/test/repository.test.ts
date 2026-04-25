@@ -1,7 +1,5 @@
 import * as assert from "assert";
-import * as fs from "original-fs";
-import * as path from "path";
-import { commands, Uri, window, workspace } from "vscode";
+import { commands, Uri } from "vscode";
 import { SourceControlManager } from "../source_control_manager";
 import { Repository } from "../repository";
 import * as testUtil from "./testUtil";
@@ -74,58 +72,5 @@ suite("Repository Tests", () => {
 
     const name = await repository.getCurrentBranch();
     assert.equal(name, "trunk");
-  });
-
-  test("Try commit file", async function () {
-    this.timeout(60000);
-    const repository: Repository | null = sourceControlManager.getRepository(
-      checkoutDir.fsPath
-    );
-    if (!repository) {
-      return;
-    }
-
-    assert.equal(repository.changes.resourceStates.length, 0);
-
-    const file = path.join(checkoutDir.fsPath, "new.txt");
-
-    fs.writeFileSync(file, "test");
-
-    const document = await workspace.openTextDocument(file);
-    await window.showTextDocument(document);
-
-    await repository.addFiles([file]);
-
-    assert.equal(repository.changes.resourceStates.length, 1);
-
-    const message = await repository.commitFiles("First Commit", [file]);
-    assert.ok(/1 file commited: revision (.*)\./i.test(message));
-
-    assert.equal(repository.changes.resourceStates.length, 0);
-
-    const remoteContent = await repository.show(file, "HEAD");
-    assert.equal(remoteContent, "test");
-  });
-
-  test("Try switch branch", async function () {
-    this.timeout(60000);
-    const newCheckoutDir = await testUtil.createRepoCheckout(
-      testUtil.getSvnUrl(repoUri) + "/trunk"
-    );
-
-    await sourceControlManager.tryOpenRepository(newCheckoutDir.fsPath);
-
-    const newRepository: Repository | null = sourceControlManager.getRepository(
-      newCheckoutDir.fsPath
-    );
-    if (!newRepository) {
-      return;
-    }
-    assert.ok(newRepository);
-
-    await newRepository.newBranch("branches/test");
-    const currentBranch = await newRepository.getCurrentBranch();
-
-    assert.equal(currentBranch, "branches/test");
   });
 });

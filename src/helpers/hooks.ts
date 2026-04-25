@@ -28,7 +28,7 @@ function getHooks(): HookConfig[] {
  *   $(cwd)          - Working directory
  *   $(svn)      - SVN executable path
  */
-function replaceVariables(
+export function replaceVariables(
   command: string,
   file: string,
   allFiles: string[],
