@@ -19,6 +19,7 @@ import * as encodeUtil from "./encoding";
 import { exists, writeFile, stat, readdir } from "./fs";
 import { getBranchName } from "./helpers/branch";
 import { configuration } from "./helpers/configuration";
+import { runHook } from "./helpers/hooks";
 import { parseInfoXml } from "./parser/infoParser";
 import { parseSvnList } from "./parser/listParser";
 import { parseSvnLog } from "./parser/logParser";
@@ -423,9 +424,10 @@ export class Repository {
   }
 
   public async commitFiles(message: string, files: string[]) {
-    files = files.map(file => this.removeAbsolutePath(file));
+    await runHook("pre", "commit", files, this.workspaceRoot);
+    const relativeFiles = files.map(file => this.removeAbsolutePath(file));
 
-    const args = ["commit", ...files];
+    const args = ["commit", ...relativeFiles];
 
     if (await exists(path.join(this.workspaceRoot, message))) {
       args.push("--force-log");
@@ -474,9 +476,11 @@ export class Repository {
         sendedFiles === 1 ? "file" : "files"
       } commited`;
 
+      await runHook("post", "commit", files, this.workspaceRoot);
       return `${filesMessage}: revision ${matches[1]}.`;
     }
 
+    await runHook("post", "commit", files, this.workspaceRoot);
     return result.stdout;
   }
 
@@ -508,13 +512,18 @@ export class Repository {
     return this.exec(["add", "--depth=empty", ...files]);
   }
 
-  public addFiles(files: string[]) {
+  public async addFiles(files: string[]) {
+    await runHook("pre", "add", files, this.workspaceRoot);
     const ignoreList = configuration.get<string[]>("sourceControl.ignore");
+    let result;
     if (ignoreList.length > 0) {
-      return this.addFilesByIgnore(files, ignoreList);
+      result = await this.addFilesByIgnore(files, ignoreList);
+    } else {
+      const relativeFiles = files.map(file => this.removeAbsolutePath(file));
+      result = await this.exec(["add", ...relativeFiles]);
     }
-    files = files.map(file => this.removeAbsolutePath(file));
-    return this.exec(["add", ...files]);
+    await runHook("post", "add", files, this.workspaceRoot);
+    return result;
   }
 
   public addChangelist(files: string[], changelist: string) {
@@ -682,12 +691,15 @@ export class Repository {
   }
 
   public async revert(files: string[], depth: keyof typeof SvnDepth) {
-    files = files.map(file => this.removeAbsolutePath(file));
-    const result = await this.exec(["revert", "--depth", depth, ...files]);
+    await runHook("pre", "revert", files, this.workspaceRoot);
+    const relativeFiles = files.map(file => this.removeAbsolutePath(file));
+    const result = await this.exec(["revert", "--depth", depth, ...relativeFiles]);
+    await runHook("post", "revert", files, this.workspaceRoot);
     return result.stdout;
   }
 
   public async update(ignoreExternals: boolean = true): Promise<string> {
+    await runHook("pre", "update", [this.workspaceRoot], this.workspaceRoot);
     const args = ["update"];
 
     if (ignoreExternals) {
@@ -697,6 +709,8 @@ export class Repository {
     const result = await this.exec(args);
 
     this.resetInfoCache();
+
+    await runHook("post", "update", [this.workspaceRoot], this.workspaceRoot);
 
     const message = result.stdout.trim().split(/\r?\n/).pop();
 
@@ -747,17 +761,19 @@ export class Repository {
   }
 
   public async removeFiles(files: string[], keepLocal: boolean) {
-    files = files.map(file => this.removeAbsolutePath(file));
+    await runHook("pre", "remove", files, this.workspaceRoot);
+    const relativeFiles = files.map(file => this.removeAbsolutePath(file));
     const args = ["remove"];
 
     if (keepLocal) {
       args.push("--keep-local");
     }
 
-    args.push(...files);
+    args.push(...relativeFiles);
 
     const result = await this.exec(args);
 
+    await runHook("post", "remove", files, this.workspaceRoot);
     return result.stdout;
   }
 

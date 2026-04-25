@@ -473,15 +473,37 @@ export class Repository implements IRemoteRepository {
         });
       })) || [];
 
-    const fileConfig = workspace.getConfiguration("files", Uri.file(this.root));
+    const ignoreFilesExclude = configuration.get<boolean>(
+      "sourceControl.ignoreFilesExclude",
+      false
+    );
 
-    const filesToExclude = fileConfig.get<any>("exclude");
+    const ignoreSearchExclude = configuration.get<boolean>(
+      "sourceControl.ignoreSearchExclude",
+      false
+    );
 
     const excludeList: string[] = [];
-    for (const pattern in filesToExclude) {
-      if (filesToExclude.hasOwnProperty(pattern)) {
-        const negate = !filesToExclude[pattern];
-        excludeList.push((negate ? "!" : "") + pattern);
+    if (!ignoreFilesExclude) {
+      const fileConfig = workspace.getConfiguration("files", Uri.file(this.root));
+      const filesToExclude = fileConfig.get<any>("exclude");
+
+      for (const pattern in filesToExclude) {
+        if (filesToExclude.hasOwnProperty(pattern)) {
+          const negate = !filesToExclude[pattern];
+          excludeList.push((negate ? "!" : "") + pattern);
+        }
+      }
+    }
+    if (!ignoreSearchExclude) {
+      const searchConfig = workspace.getConfiguration("search", Uri.file(this.root));
+      const searchToExclude = searchConfig.get<any>("exclude");
+
+      for (const pattern in searchToExclude) {
+        if (searchToExclude.hasOwnProperty(pattern)) {
+          const negate = !searchToExclude[pattern];
+          excludeList.push((negate ? "!" : "") + pattern);
+        }
       }
     }
 

@@ -1280,6 +1280,39 @@
                     "type": "boolean",
                     "description": "Set to ignore externals definitions on update (add --ignore-externals)",
                     "default": true
+                },
+                "svn.sourceControl.ignoreFilesExclude": {
+                    "type": "boolean",
+                    "description": "Ignore VSCode's 'files.exclude' settings, only use SVN's own ignore rules. This prevents files hidden by VSCode's file explorer from being excluded from SVN operations.",
+                    "default": false
+                },
+                "svn.sourceControl.ignoreSearchExclude": {
+                    "type": "boolean",
+                    "description": "Ignore VSCode's 'search.exclude' settings, only use SVN's own ignore rules. This prevents files excluded from VSCode's search from being excluded from SVN operations.",
+                    "default": false
+                },
+                "svn.hooks.commands": {
+                    "type": "array",
+                    "default": [],
+                    "description": "Hook commands for SVN operations. Each hook has a 'hook' name (e.g., preAdd, postAdd, preRemove, postRemove, preCommit, postCommit, preRevert, postRevert, preUpdate, postUpdate) and a 'command' to execute. Supports variables: $(file), $(fileName), $(fileBaseName), $(fileExt), $(fileDir), $(files), $(cwd).",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "hook": {
+                                "type": "string",
+                                "description": "Hook name: 'pre' or 'post' + SVN command name (e.g., preAdd, postAdd, preRemove, postRemove, preCommit, postCommit, preRevert, postRevert, preUpdate, postUpdate)"
+                            },
+                            "command": {
+                                "type": "string",
+                                "description": "Command to execute. Supports variables: $(file), $(fileName), $(fileBaseName), $(fileExt), $(fileDir), $(files), $(cwd)"
+                            }
+                        },
+                        "required": [
+                            "hook",
+                            "command"
+                        ]
+                    },
+                    "scope": "resource"
                 }
             }
         },
