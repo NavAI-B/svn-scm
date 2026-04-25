@@ -67,8 +67,13 @@ export interface BufferResult {
 export class Svn {
   public version: string;
 
-  private svnPath: string;
+  private _svnPath: string;
   private lastCwd: string = "";
+
+  /** Get the resolved SVN executable path */
+  get svnPath(): string {
+    return this._svnPath;
+  }
 
   private _onOutput = new EventEmitter();
   get onOutput(): EventEmitter {
@@ -76,7 +81,7 @@ export class Svn {
   }
 
   constructor(options: ISvnOptions) {
-    this.svnPath = options.svnPath;
+    this._svnPath = options.svnPath;
     this.version = options.version;
   }
 
@@ -139,7 +144,7 @@ export class Svn {
       LANG: "en_US.UTF-8"
     });
 
-    const process = cp.spawn(this.svnPath, args, defaults);
+    const process = cp.spawn(this._svnPath, args, defaults);
 
     const disposables: IDisposable[] = [];
 

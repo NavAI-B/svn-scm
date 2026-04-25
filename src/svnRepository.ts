@@ -424,7 +424,7 @@ export class Repository {
   }
 
   public async commitFiles(message: string, files: string[]) {
-    await runHook("pre", "commit", files, this.workspaceRoot);
+    await runHook("pre", "commit", files, this.workspaceRoot, this.svn.svnPath);
     const relativeFiles = files.map(file => this.removeAbsolutePath(file));
 
     const args = ["commit", ...relativeFiles];
@@ -476,11 +476,11 @@ export class Repository {
         sendedFiles === 1 ? "file" : "files"
       } commited`;
 
-      await runHook("post", "commit", files, this.workspaceRoot);
+      await runHook("post", "commit", files, this.workspaceRoot, this.svn.svnPath);
       return `${filesMessage}: revision ${matches[1]}.`;
     }
 
-    await runHook("post", "commit", files, this.workspaceRoot);
+    await runHook("post", "commit", files, this.workspaceRoot, this.svn.svnPath);
     return result.stdout;
   }
 
@@ -513,7 +513,7 @@ export class Repository {
   }
 
   public async addFiles(files: string[]) {
-    await runHook("pre", "add", files, this.workspaceRoot);
+    await runHook("pre", "add", files, this.workspaceRoot, this.svn.svnPath);
     const ignoreList = configuration.get<string[]>("sourceControl.ignore");
     let result;
     if (ignoreList.length > 0) {
@@ -522,7 +522,7 @@ export class Repository {
       const relativeFiles = files.map(file => this.removeAbsolutePath(file));
       result = await this.exec(["add", ...relativeFiles]);
     }
-    await runHook("post", "add", files, this.workspaceRoot);
+    await runHook("post", "add", files, this.workspaceRoot, this.svn.svnPath);
     return result;
   }
 
@@ -691,15 +691,15 @@ export class Repository {
   }
 
   public async revert(files: string[], depth: keyof typeof SvnDepth) {
-    await runHook("pre", "revert", files, this.workspaceRoot);
+    await runHook("pre", "revert", files, this.workspaceRoot, this.svn.svnPath);
     const relativeFiles = files.map(file => this.removeAbsolutePath(file));
     const result = await this.exec(["revert", "--depth", depth, ...relativeFiles]);
-    await runHook("post", "revert", files, this.workspaceRoot);
+    await runHook("post", "revert", files, this.workspaceRoot, this.svn.svnPath);
     return result.stdout;
   }
 
   public async update(ignoreExternals: boolean = true): Promise<string> {
-    await runHook("pre", "update", [this.workspaceRoot], this.workspaceRoot);
+    await runHook("pre", "update", [this.workspaceRoot], this.workspaceRoot, this.svn.svnPath);
     const args = ["update"];
 
     if (ignoreExternals) {
@@ -710,7 +710,7 @@ export class Repository {
 
     this.resetInfoCache();
 
-    await runHook("post", "update", [this.workspaceRoot], this.workspaceRoot);
+    await runHook("post", "update", [this.workspaceRoot], this.workspaceRoot, this.svn.svnPath);
 
     const message = result.stdout.trim().split(/\r?\n/).pop();
 
@@ -761,7 +761,7 @@ export class Repository {
   }
 
   public async removeFiles(files: string[], keepLocal: boolean) {
-    await runHook("pre", "remove", files, this.workspaceRoot);
+    await runHook("pre", "remove", files, this.workspaceRoot, this.svn.svnPath);
     const relativeFiles = files.map(file => this.removeAbsolutePath(file));
     const args = ["remove"];
 
@@ -773,7 +773,7 @@ export class Repository {
 
     const result = await this.exec(args);
 
-    await runHook("post", "remove", files, this.workspaceRoot);
+    await runHook("post", "remove", files, this.workspaceRoot, this.svn.svnPath);
     return result.stdout;
   }
 

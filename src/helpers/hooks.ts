@@ -26,12 +26,14 @@ function getHooks(): HookConfig[] {
  *   $(fileDir)      - Directory of the file
  *   $(files)        - All file paths joined by space
  *   $(cwd)          - Working directory
+ *   $(svn)      - SVN executable path
  */
 function replaceVariables(
   command: string,
   file: string,
   allFiles: string[],
-  cwd: string
+  cwd: string,
+  svnPath: string
 ): string {
   const parsed = path.parse(file);
   return command
@@ -41,7 +43,8 @@ function replaceVariables(
     .replace(/\$\(fileExt\)/g, parsed.ext)
     .replace(/\$\(fileDir\)/g, parsed.dir)
     .replace(/\$\(files\)/g, allFiles.map(f => `"${f}"`).join(" "))
-    .replace(/\$\(cwd\)/g, cwd);
+    .replace(/\$\(cwd\)/g, cwd)
+    .replace(/\$\(svn\)/g, svnPath);
 }
 
 /**
@@ -65,12 +68,14 @@ function execCommand(command: string, cwd: string): Promise<void> {
  * @param svnCommand - SVN command name (e.g., "add", "remove", "commit")
  * @param files - Array of file paths involved
  * @param cwd - Working directory
+ * @param svnPath - SVN executable path
  */
 export async function runHook(
   timing: "pre" | "post",
   svnCommand: string,
   files: string[],
-  cwd: string
+  cwd: string,
+  svnPath: string = "svn"
 ): Promise<void> {
   const hookName = `${timing}${svnCommand.charAt(0).toUpperCase()}${svnCommand.slice(1)}`;
   const hooks = getHooks().filter(h => h.hook === hookName);
@@ -81,7 +86,7 @@ export async function runHook(
     }
 
     for (const file of files) {
-      const resolvedCommand = replaceVariables(hook.command, file, files, cwd);
+      const resolvedCommand = replaceVariables(hook.command, file, files, cwd, svnPath);
       try {
         await execCommand(resolvedCommand, cwd);
       } catch (error) {

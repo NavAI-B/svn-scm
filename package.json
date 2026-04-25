@@ -1304,7 +1304,7 @@
                             },
                             "command": {
                                 "type": "string",
-                                "description": "Command to execute. Supports variables: $(file), $(fileName), $(fileBaseName), $(fileExt), $(fileDir), $(files), $(cwd)"
+                                "description": "Command to execute. Supports variables: $(svn), $(file), $(fileName), $(fileBaseName), $(fileExt), $(fileDir), $(files), $(cwd)"
                             }
                         },
                         "required": [
