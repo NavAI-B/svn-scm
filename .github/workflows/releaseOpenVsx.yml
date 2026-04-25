@@ -6,6 +6,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,8 +29,8 @@ jobs:
 
       - name: Release Open VSX
         run: |
-          npx vsce package -o svn-scm-ovsx.vsix
-          npx ovsx publish svn-scm-ovsx.vsix -p ${{ secrets.ovsxToken }}
+          npx vsce package -o svn-scm-modified-ovsx.vsix
+          npx ovsx publish svn-scm-modified-ovsx.vsix -p ${{ secrets.ovsxToken }}
 
       - name: Get tag
         id: getTag
@@ -36,7 +39,7 @@ jobs:
       - name: Upload Open VSX to release
         uses: softprops/action-gh-release@v2
         with:
-          files: svn-scm-ovsx.vsix
+          files: svn-scm-modified-ovsx.vsix
           tag_name: ${{ steps.getTag.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

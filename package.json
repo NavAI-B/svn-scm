@@ -2,7 +2,7 @@
     "name": "svn-scm-modified",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "2.17.1",
+    "version": "2.17.3",
     "publisher": "NavAI-B",
     "engines": {
         "vscode": "^1.117.0"
@@ -10,13 +10,13 @@
     "private": true,
     "enabledApiProposals": [],
     "icon": "images/subversion.png",
-    "homepage": "https://github.com/JohnstonCode/svn-scm/blob/master/README.md",
+    "homepage": "https://github.com/NavAI-B/svn-scm/blob/master/README.md",
     "repository": {
         "type": "git",
-        "url": "https://github.com/JohnstonCode/svn-scm.git"
+        "url": "https://github.com/NavAI-B/svn-scm.git"
     },
     "bugs": {
-        "url": "https://github.com/JohnstonCode/svn-scm/issues"
+        "url": "https://github.com/NavAI-B/svn-scm/issues"
     },
     "categories": [
         "Other",

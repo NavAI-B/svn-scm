@@ -35,9 +35,7 @@ export default class SvnError {
         {
           exitCode: this.exitCode,
           svnErrorCode: this.svnErrorCode,
-          svnCommand: this.svnCommand,
-          stdout: this.stdout,
-          stderr: this.stderr
+          svnCommand: this.svnCommand
         },
         null,
         2

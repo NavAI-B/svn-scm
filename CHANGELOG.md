@@ -1,3 +1,24 @@
+## 2.17.3 (2026-04-26)
+
+### Bug Fixes
+
+* fix no-op string replacement in checkout command
+* remove sensitive URL from checkout progress title
+* add permissions block to GitHub Actions workflows
+* sync artifact filenames with new package name
+
+## 2.17.2 (2026-04-26)
+
+### Miscellaneous
+
+* update dependencies
+* add ignore VSCode Exclude Rules config option
+* add svn command hooks config option
+* add zh-cn translation
+* rename package from `svn-scm` to `svn-scm-modified`
+* migrate repository from JohnstonCode to NavAI-B
+* update CI/CD workflows and release configuration for new package name
+
 # [2.17.0](https://github.com/JohnstonCode/svn-scm/compare/v2.16.1...v2.17.0) (2023-06-22)
 
 

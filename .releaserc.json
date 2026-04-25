@@ -19,8 +19,8 @@
     "semantic-release-vsce",
     {
       "path": "@semantic-release/github",
-      "assets": "svn-scm.vsix"
+      "assets": "svn-scm-modified.vsix"
     }
   ],
-  "packageVsix": "svn-scm.vsix"
+  "packageVsix": "svn-scm-modified.vsix"
 }

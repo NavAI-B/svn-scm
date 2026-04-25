@@ -8,6 +8,9 @@ on:
     branches:
       - '*'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: ${{ matrix.os }} - stable
@@ -62,7 +65,7 @@ jobs:
           CODE_VERSION: stable
 
       - name: Release
-        if: startsWith(matrix.os, 'ubuntu') && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
+        if: startsWith(matrix.os, 'ubuntu') && github.ref == 'refs/heads/master' && github.repository == 'NavAI-B/svn-scm'
         run: |
           npm run organize
           npm run semantic-release
@@ -115,19 +118,19 @@ jobs:
         shell: bash
 
       - name: Package extension
-        run: npx vsce package -o svn-scm.vsix
+        run: npx vsce package -o svn-scm-modified.vsix
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: svn-scm-${{ github.sha }}
-          path: svn-scm.vsix
+          name: svn-scm-modified-${{ github.sha }}
+          path: svn-scm-modified.vsix
 
       - name: Package open-vsx extension
-        run: npx vsce package -o svn-scm-ovsx.vsix
+        run: npx vsce package -o svn-scm-modified-ovsx.vsix
 
       - name: Upload open-vsx artifact
         uses: actions/upload-artifact@v4
         with:
-          name: svn-scm-ovsx-${{ github.sha }}
-          path: svn-scm-ovsx.vsix
+          name: svn-scm-modified-ovsx-${{ github.sha }}
+          path: svn-scm-modified-ovsx.vsix

@@ -52,7 +52,7 @@ export class Checkout extends Command {
     // Get folder name from branch
     const branch = getBranchName(url);
     if (branch) {
-      const baseUrl = url.replace(/\//g, "/").replace(branch.path, "");
+      const baseUrl = url.replace(branch.path, "");
       folderName = path.basename(baseUrl);
     }
 
@@ -76,7 +76,7 @@ export class Checkout extends Command {
 
     const progressOptions = {
       location,
-      title: `Checkout svn repository '${url}'...`,
+      title: "Checkout svn repository...",
       cancellable: true
     };
 
