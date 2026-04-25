@@ -3,59 +3,48 @@ name: build
 on:
   push:
     branches:
-      - 'master'
+      - master
   pull_request:
-    branches: 
+    branches:
       - '*'
 
 jobs:
   build:
-    name: ${{ matrix.os }} ${{ matrix.version }}
+    name: ${{ matrix.os }} - stable
     runs-on: ${{ matrix.os }}
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
-        version: ['stable', 'insiders']
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: '12.17'
+          node-version: '20'
+          cache: yarn
 
       - name: Install Dependencies
-        run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
+        run: yarn install --frozen-lockfile
         shell: bash
-      
+
       - name: Compile sources for tests
         run: yarn run test-compile
 
-      - name: Cache VSCode binary
-        id: cache-vscode
-        uses: actions/cache@v1
-        with:
-          path: .vscode-test
-          key: vscode-${{ runner.os }}-${{ matrix.version }}-${{ github.run_id }}
-          restore-keys: |
-            vscode-${{ runner.os }}-${{ matrix.version }}-
-            vscode-${{ runner.os }}-
-      
       - name: Run tests
-        uses: GabrielBB/xvfb-action@v1.0
+        uses: coactions/setup-xvfb@v1
         with:
           run: yarn test
         env:
-          CODE_VERSION: ${{ matrix.version }}
-        continue-on-error: ${{ matrix.version == 'insiders' }}
+          CODE_VERSION: stable
 
       - name: Release
-        if: startsWith(matrix.os, 'ubuntu') && matrix.version == 'stable' && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
+        if: startsWith(matrix.os, 'ubuntu') && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         run: |
           yarn run organize
           yarn run semantic-release
@@ -70,19 +59,20 @@ jobs:
 
   eslint:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: '12.17'
+          node-version: '20'
+          cache: yarn
 
       - name: Install Dependencies
-        run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
+        run: yarn install --frozen-lockfile
         shell: bash
 
       - name: Lint check
@@ -90,37 +80,36 @@ jobs:
 
   artifact:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: '12.17'
+          node-version: '20'
+          cache: yarn
 
       - name: Install Dependencies
-        run: 'yarn install --frozen-lockfile || yarn install --frozen-lockfile'
+        run: yarn install --frozen-lockfile
         shell: bash
 
       - name: Package extension
         run: npx vsce package -o svn-scm.vsix
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
-          name: "svn-scm-${{ github.sha }}.vsix"
-          path: "svn-scm.vsix"
+          name: svn-scm-${{ github.sha }}
+          path: svn-scm.vsix
 
       - name: Package open-vsx extension
-        run: |
-          yarn add iconv-lite jschardet
-          npx vsce package -o svn-scm-ovsx.vsix
+        run: npx vsce package -o svn-scm-ovsx.vsix
 
       - name: Upload open-vsx artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
-          name: "svn-scm-ovsx-${{ github.sha }}.vsix"
-          path: "svn-scm-ovsx.vsix"
+          name: svn-scm-ovsx-${{ github.sha }}
+          path: svn-scm-ovsx.vsix
