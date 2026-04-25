@@ -178,7 +178,7 @@ export function destroyAllTempPaths() {
 
 export function activeExtension() {
   return new Promise<void>((resolve, reject) => {
-    const extension = extensions.getExtension("johnstoncode.svn-scm");
+    const extension = extensions.getExtension("NavAI-B.svn-scm");
     if (!extension) {
       reject();
       return;
