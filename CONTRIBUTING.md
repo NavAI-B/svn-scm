@@ -4,10 +4,10 @@ Before you contribute to this project, please open an issue beforehand to discus
 
 ## Development setup
 
-Requirements    
+Requirements
 * [Git](https://git-scm.com/)
-* [NodeJs](https://nodejs.org/) >= 12.4.0
-* [yarn](https://classic.yarnpkg.com/lang/en/) >= 1.22
+* [NodeJs](https://nodejs.org/) >= 20.0.0
+* [yarn](https://classic.yarnpkg.com/lang/en/) >= 1.22 (optional, npm also works)
 
 First you will need to fork the project
 ![Github Fork](images/docs/fork.png)
@@ -22,24 +22,71 @@ To install all of the required dependencies run
 ```
 yarn --frozen-lockfile
 ```
+or with npm:
+```
+npm ci
+```
 
 ### Build
-To build the extension
+To build the extension (TypeScript via webpack + SCSS)
 ```
 yarn run build
 ```
+or with npm:
+```
+npm run build
+```
+This runs `build:ts` (webpack production) and `build:css` (sass compilation) in sequence.
 
 ### Watch
 For development run in watch mode
 ```
 yarn run compile
 ```
+or with npm:
+```
+npm run compile
+```
+This starts webpack in watch mode. To also watch SCSS changes:
+```
+yarn run watch:css
+# or
+npm run watch:css
+```
 
 ### Formatting
-This project uses [prettier](https://prettier.io/) for code formatting. You can run prettier across the code by calling `yarn run style-fix`
+This project uses [prettier](https://prettier.io/) for code formatting. You can run prettier across the code by calling:
+```
+yarn run style-fix
+# or
+npm run style-fix
+```
 
 ### Linting
-This project uses [ESLint](https://eslint.org/) for code linting. You can run ESLint across the code by calling `yarn run lint`. To fix fixable errors run `yarn run lint:fix`
+This project uses [ESLint](https://eslint.org/) for code linting. You can run ESLint across the code by calling:
+```
+yarn run lint
+# or
+npm run lint
+```
+To fix fixable errors:
+```
+yarn run lint:fix
+# or
+npm run lint:fix
+```
+
+### Testing
+To compile and run tests:
+```
+yarn run test-compile
+yarn test
+```
+or with npm:
+```
+npm run test-compile
+npm test
+```
 
 ### Debugging
 Run in VS Code
