@@ -67,7 +67,8 @@ jobs:
           CODE_VERSION: stable
 
       - name: Release
-        if: startsWith(matrix.os, 'ubuntu') && github.ref == 'refs/heads/master' && github.repository == 'NavAI-B/svn-scm'
+        # if: startsWith(matrix.os, 'ubuntu') && github.ref == 'refs/heads/master' && github.repository == 'NavAI-B/svn-scm'
+        if: false
         run: |
           npm run organize
           npm run semantic-release
