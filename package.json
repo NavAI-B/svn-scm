@@ -28,26 +28,23 @@
         "svn",
         "subversion"
     ],
-    "activationEvents": [
-        "*"
-    ],
     "main": "./out/extension",
     "scripts": {
-        "build": "yarn run build:ts && yarn run build:css",
-        "build:css": "yarn sass scss/:css/ --style compressed --no-source-map",
+        "build": "npm run build:ts && npm run build:css",
+        "build:css": "npx sass scss/:css/ --style compressed --no-source-map",
         "build:ts": "webpack --mode production",
         "compile": "webpack --mode development --watch",
         "lint": "eslint \"src/**/*.ts\"",
-        "lint:fix": "yarn run lint --fix",
+        "lint:fix": "npm run lint --fix",
         "organize": "node ./out/tools/organize.js",
-        "semantic-release": "semantic-release --yarn",
-        "style-check": "yarn prettier --check \"src/**/*.ts\"",
-        "style-fix": "yarn prettier --write \"src/**/*.ts\"",
+        "semantic-release": "semantic-release",
+        "style-check": "npx prettier --check \"src/**/*.ts\"",
+        "style-fix": "npx prettier --write \"src/**/*.ts\"",
         "test": "node ./out/test/runTest.js",
         "test-compile": "tsc -p ./",
         "tools:genReadme": "node ./out/tools/generateConfigSectionForReadme.js",
-        "vscode:prepublish": "yarn run lint && yarn run build",
-        "watch:css": "yarn run build:css -w"
+        "vscode:prepublish": "npm run lint && npm run build",
+        "watch:css": "npm run build:css -- -w"
     },
     "dependencies": {
         "@vscode/iconv-lite-umd": "^0.7.1",
@@ -73,7 +70,6 @@
         "eslint-config-prettier": "^10.1.2",
         "eslint-plugin-prettier": "^5.4.0",
         "glob": "^13.0.6",
-        "milligram": "^1.4.1",
         "minimatch": "^10.0.0",
         "mocha": "^11.1.0",
         "original-fs": "^1.2.0",
