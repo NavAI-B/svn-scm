@@ -27,27 +27,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: yarn
+          cache: npm
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
         shell: bash
 
       - name: Compile sources for tests
-        run: yarn run test-compile
+        run: npm run test-compile
 
       - name: Run tests
         uses: coactions/setup-xvfb@v1
         with:
-          run: yarn test
+          run: npm test
         env:
           CODE_VERSION: stable
 
       - name: Release
         if: startsWith(matrix.os, 'ubuntu') && github.ref == 'refs/heads/master' && github.repository == 'JohnstonCode/svn-scm'
         run: |
-          yarn run organize
-          yarn run semantic-release
+          npm run organize
+          npm run semantic-release
         env:
           VSCE_TOKEN: ${{ secrets.vsceToken }}
           GITHUB_TOKEN: ${{ secrets.githubToken }}
@@ -69,14 +69,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: yarn
+          cache: npm
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
         shell: bash
 
       - name: Lint check
-        run: yarn run lint --silent -- -f stylish
+        run: npm run lint --silent -- -f stylish
 
   artifact:
     runs-on: ubuntu-latest
@@ -90,10 +90,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: yarn
+          cache: npm
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
         shell: bash
 
       - name: Package extension
