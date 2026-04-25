@@ -106,6 +106,9 @@ export class Svn {
       );
     }
 
+    // Capture command name before adding credentials to args
+    const svnCommand = args[0];
+
     if (options.username) {
       args.push("--username", options.username);
     }
@@ -226,7 +229,7 @@ export class Svn {
           stderrFormated: stderr.replace(/^svn: E\d+: +/gm, ""),
           exitCode,
           svnErrorCode: getSvnErrorCode(stderr),
-          svnCommand: args[0]
+          svnCommand
         })
       );
     }
