@@ -10,7 +10,7 @@ suite("Extension Tests", () => {
   });
 
   test("should be present", () => {
-    assert.ok(vscode.extensions.getExtension("NavAI-B.svn-scm"));
+    assert.ok(vscode.extensions.getExtension("NavAI-B.svn-scm-modified"));
   });
 
   // The extension is already activated by vscode before running mocha test framework.
@@ -19,7 +19,7 @@ suite("Extension Tests", () => {
   test("should be able to activate the extension", function (done) {
     this.timeout(60 * 1000);
     const extension = vscode.extensions.getExtension(
-      "NavAI-B.svn-scm"
+      "NavAI-B.svn-scm-modified"
     ) as vscode.Extension<any>;
 
     if (!extension) {
