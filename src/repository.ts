@@ -5,6 +5,7 @@ import {
   Disposable,
   Event,
   EventEmitter,
+  Memento,
   ProgressLocation,
   scm,
   SecretStorage,
@@ -41,6 +42,7 @@ import { StatusBarCommands } from "./statusbar/statusBarCommands";
 import { svnErrorCodes } from "./svn";
 import { Repository as BaseRepository } from "./svnRepository";
 import { toSvnUri } from "./uri";
+import { t } from "./i18n";
 import {
   anyEvent,
   dispose,
@@ -70,10 +72,13 @@ export class Repository implements IRemoteRepository {
   public sourceControl: SourceControl;
   public statusBar: StatusBarCommands;
   public changes: ISvnResourceGroup;
+  public stagedChanges: ISvnResourceGroup;
+  public stagedUris: Set<string> = new Set();
   public unversioned: ISvnResourceGroup;
   public remoteChanges?: ISvnResourceGroup;
   public changelists: Map<string, ISvnResourceGroup> = new Map();
   public conflicts: ISvnResourceGroup;
+  private workspaceState: Memento;
   public statusIgnored: IFileStatus[] = [];
   public statusExternal: IFileStatus[] = [];
   private disposables: Disposable[] = [];
@@ -137,6 +142,7 @@ export class Repository implements IRemoteRepository {
     this._onDidChangeState.fire(state);
 
     this.changes.resourceStates = [];
+    this.stagedChanges.resourceStates = [];
     this.unversioned.resourceStates = [];
     this.conflicts.resourceStates = [];
     this.changelists.forEach((group, _changelist) => {
@@ -184,9 +190,26 @@ export class Repository implements IRemoteRepository {
     this.repository.password = password;
   }
 
+  private get stagedStateKey(): string {
+    return `svn.stagedUris.${this.repository.workspaceRoot}`;
+  }
+
+  private loadStagedUris(): Set<string> {
+    const stored = this.workspaceState.get<string[]>(this.stagedStateKey, []);
+    return new Set(stored);
+  }
+
+  public saveStagedUris() {
+    this.workspaceState.update(
+      this.stagedStateKey,
+      Array.from(this.stagedUris)
+    );
+  }
+
   constructor(
     public repository: BaseRepository,
-    private secrets: SecretStorage
+    private secrets: SecretStorage,
+    workspaceState: Memento
   ) {
     this._fsWatcher = new RepositoryFilesWatcher(repository.root);
     this.disposables.push(this._fsWatcher);
@@ -225,24 +248,33 @@ export class Repository implements IRemoteRepository {
       this.disposables
     );
 
+    this.workspaceState = workspaceState;
+    this.stagedUris = this.loadStagedUris();
+
+    this.stagedChanges = this.sourceControl.createResourceGroup(
+      "staged",
+      t("stagedChanges")
+    ) as ISvnResourceGroup;
     this.changes = this.sourceControl.createResourceGroup(
       "changes",
-      "Changes"
+      t("changes")
     ) as ISvnResourceGroup;
     this.conflicts = this.sourceControl.createResourceGroup(
       "conflicts",
-      "Conflicts"
+      t("conflicts")
     ) as ISvnResourceGroup;
     this.unversioned = this.sourceControl.createResourceGroup(
       "unversioned",
-      "Unversioned"
+      t("unversioned")
     ) as ISvnResourceGroup;
 
     this.changes.hideWhenEmpty = true;
+    this.stagedChanges.hideWhenEmpty = false;
     this.unversioned.hideWhenEmpty = true;
     this.conflicts.hideWhenEmpty = true;
 
     this.disposables.push(this.changes);
+    this.disposables.push(this.stagedChanges);
     this.disposables.push(this.conflicts);
 
     // The this.unversioned can recreated by update state model
@@ -640,7 +672,32 @@ export class Repository implements IRemoteRepository {
       }
     }
 
-    this.changes.resourceStates = changes;
+    // Split changes into staged and unstaged
+    const staged: Resource[] = [];
+    const unstaged: Resource[] = [];
+    for (const resource of changes) {
+      if (this.stagedUris.has(resource.resourceUri.fsPath)) {
+        staged.push(resource);
+      } else {
+        unstaged.push(resource);
+      }
+    }
+
+    // Clean up stagedUris for files no longer in changes
+    const allChangesPaths = new Set(changes.map(r => r.resourceUri.fsPath));
+    let stagedChanged = false;
+    for (const uri of this.stagedUris) {
+      if (!allChangesPaths.has(uri)) {
+        this.stagedUris.delete(uri);
+        stagedChanged = true;
+      }
+    }
+    if (stagedChanged) {
+      this.saveStagedUris();
+    }
+
+    this.changes.resourceStates = unstaged;
+    this.stagedChanges.resourceStates = staged;
     this.conflicts.resourceStates = conflicts;
 
     const prevChangelistsSize = this.changelists.size;
@@ -649,7 +706,7 @@ export class Repository implements IRemoteRepository {
       group.resourceStates = [];
     });
 
-    const counts = [this.changes, this.conflicts];
+    const counts = [this.changes, this.stagedChanges, this.conflicts];
 
     const ignoreOnStatusCountList = configuration.get<string[]>(
       "sourceControl.ignoreOnStatusCount"
@@ -661,7 +718,7 @@ export class Repository implements IRemoteRepository {
         // Prefix 'changelist-' to prevent double id with 'change' or 'external'
         group = this.sourceControl.createResourceGroup(
           `changelist-${changelist}`,
-          `Changelist "${changelist}"`
+          t("changelist", changelist)
         ) as ISvnResourceGroup;
         group.hideWhenEmpty = true;
         this.disposables.push(group);
@@ -682,7 +739,7 @@ export class Repository implements IRemoteRepository {
 
       this.unversioned = this.sourceControl.createResourceGroup(
         "unversioned",
-        "Unversioned"
+        t("unversioned")
       ) as ISvnResourceGroup;
 
       this.unversioned.hideWhenEmpty = true;
@@ -712,7 +769,7 @@ export class Repository implements IRemoteRepository {
 
       this.remoteChanges = this.sourceControl.createResourceGroup(
         "remotechanges",
-        "Remote Changes"
+        t("remoteChanges")
       ) as ISvnResourceGroup;
 
       this.remoteChanges.repository = this;

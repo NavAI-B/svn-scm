@@ -1,3 +1,12 @@
+## 2.18.1 (2026-05-13)
+
+### Features
+
+* add extensible i18n translation system for SCM resource group labels (zh-cn, zh-tw, ja, ko)
+* add "Wait for commit" staging area (virtual changelist) with stage/unstage commands
+* commit now uses staged files directly instead of file picker popup
+* persist staged files across sessions via workspace state
+
 ## 2.18.0 (2026-05-13)
 
 ### Features

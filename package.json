@@ -2,7 +2,7 @@
     "name": "svn-scm-modified",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "2.18.0",
+    "version": "2.18.1",
     "publisher": "NavAI-B",
     "engines": {
         "vscode": "^1.117.0"
@@ -211,6 +211,30 @@
                 "command": "svn.selectAIModel",
                 "title": "%command.svn.selectAIModel.title%",
                 "category": "SVN"
+            },
+            {
+                "command": "svn.stage",
+                "title": "%command.svn.stage.title%",
+                "category": "SVN",
+                "icon": "$(plus)"
+            },
+            {
+                "command": "svn.unstage",
+                "title": "%command.svn.unstage.title%",
+                "category": "SVN",
+                "icon": "$(remove)"
+            },
+            {
+                "command": "svn.stageAll",
+                "title": "%command.svn.stageAll.title%",
+                "category": "SVN",
+                "icon": "$(plus)"
+            },
+            {
+                "command": "svn.unstageAll",
+                "title": "%command.svn.unstageAll.title%",
+                "category": "SVN",
+                "icon": "$(remove)"
             },
             {
                 "command": "svn.itemlog.copymsg",
@@ -855,12 +879,32 @@
                     "command": "svn.revertAll",
                     "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == changes",
                     "group": "inline"
+                },
+                {
+                    "command": "svn.stageAll",
+                    "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == changes",
+                    "group": "inline"
+                },
+                {
+                    "command": "svn.unstageAll",
+                    "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == staged",
+                    "group": "inline"
                 }
             ],
             "scm/resourceState/context": [
                 {
                     "command": "svn.add",
                     "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == unversioned",
+                    "group": "inline"
+                },
+                {
+                    "command": "svn.stage",
+                    "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == changes",
+                    "group": "inline"
+                },
+                {
+                    "command": "svn.unstage",
+                    "when": "config.svn.enabled && scmProvider == svn && scmResourceGroup == staged",
                     "group": "inline"
                 },
                 {

@@ -7,16 +7,16 @@ import { Status } from "../common/types";
 const MAX_DIFF_LENGTH = 50000;
 
 /**
- * Collect diff content from the current changes in the repository
+ * Collect diff content from the staged changes in the repository
  */
 export async function collectDiff(repository: Repository): Promise<string> {
-  const changes = repository.changes.resourceStates as Resource[];
+  const staged = repository.stagedChanges.resourceStates as Resource[];
 
-  if (changes.length === 0) {
+  if (staged.length === 0) {
     return "";
   }
 
-  const filePaths = changes
+  const filePaths = staged
     .filter(r => r.type !== Status.UNVERSIONED && r.type !== Status.IGNORED)
     .map(r => r.resourceUri.fsPath);
 

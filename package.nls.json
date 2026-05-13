@@ -63,6 +63,10 @@
   "command.svn.update.title": "Update",
   "command.svn.generateCommitMessage.title": "Generate Commit Message (AI)",
   "command.svn.selectAIModel.title": "Select AI Model",
+  "command.svn.stage.title": "Stage",
+  "command.svn.unstage.title": "Unstage",
+  "command.svn.stageAll.title": "Stage All",
+  "command.svn.unstageAll.title": "Unstage All",
 
   "configuration.title": "SVN",
   "configuration.svn.ai.enabled.description": "Enable AI-powered commit message generation using VS Code Language Model API (e.g., GitHub Copilot)",

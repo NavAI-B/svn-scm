@@ -16,7 +16,9 @@ export class GenerateCommitMessage extends Command {
 
     if (!diff || diff.trim().length === 0) {
       window.showInformationMessage(
-        l10n.t("No changes to generate commit message from.")
+        l10n.t(
+          "No staged changes to generate commit message from. Please stage files first."
+        )
       );
       return;
     }

@@ -1,6 +1,5 @@
 import * as path from "path";
-import { window } from "vscode";
-import { inputCommitFiles } from "../changelistItems";
+import { window, l10n } from "vscode";
 import { Status } from "../common/types";
 import { inputCommitMessage } from "../messages";
 import { Repository } from "../repository";
@@ -13,8 +12,12 @@ export class CommitWithMessage extends Command {
   }
 
   public async execute(repository: Repository) {
-    const resourceStates = await inputCommitFiles(repository);
-    if (!resourceStates || resourceStates.length === 0) {
+    const resourceStates = repository.stagedChanges.resourceStates;
+
+    if (resourceStates.length === 0) {
+      window.showInformationMessage(
+        l10n.t("No staged changes to commit. Please stage files first.")
+      );
       return;
     }
 
@@ -55,6 +58,12 @@ export class CommitWithMessage extends Command {
       const result = await repository.commitFiles(message, filePaths);
       window.showInformationMessage(result);
       repository.inputBox.value = "";
+
+      // Remove committed files from staged
+      for (const state of resourceStates) {
+        repository.stagedUris.delete(state.resourceUri.fsPath);
+      }
+      repository.saveStagedUris();
     } catch (error: unknown) {
       console.error(error);
       window.showErrorMessage((error as any).stderrFormated);
