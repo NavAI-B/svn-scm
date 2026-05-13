@@ -46,6 +46,8 @@ import { SourceControlManager } from "./source_control_manager";
 import { SearchLogByRevision } from "./commands/search_log_by_revision";
 import { SearchLogByText } from "./commands/search_log_by_text";
 import { Merge } from "./commands/merge";
+import { GenerateCommitMessage } from "./commands/generateCommitMessage";
+import { SelectAIModel } from "./commands/selectAIModel";
 
 export function registerCommands(
   sourceControlManager: SourceControlManager,
@@ -97,4 +99,6 @@ export function registerCommands(
   disposables.push(new RevertExplorer());
   disposables.push(new SearchLogByRevision());
   disposables.push(new SearchLogByText());
+  disposables.push(new GenerateCommitMessage());
+  disposables.push(new SelectAIModel());
 }

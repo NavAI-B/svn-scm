@@ -52,6 +52,23 @@ Each hook entry has:
 
 Full Chinese (zh-cn) translation support for all settings and commands. VSCode will automatically display the appropriate language based on your locale setting.
 
+### 4. AI Commit Message Generation
+
+Generate commit messages using AI (GitHub Copilot or other VS Code Language Model providers). Click the ✨ button in the SCM title bar or run `SVN: Generate Commit Message (AI)` from the command palette.
+
+**Settings:**
+
+| Setting | Description |
+|---|---|
+| `svn.ai.enabled` | Enable/disable AI commit message generation (default: `true`) |
+| `svn.ai.model` | Specify model in `vendor/family` format (e.g., `copilot/gpt-4o`). Leave empty for auto-select. |
+| `svn.ai.prompt` | Custom prompt template. Use `{diff}` for diff content and `{language}` for VS Code locale. |
+
+**Commands:**
+
+- `SVN: Generate Commit Message (AI)` — Generate and fill commit message
+- `SVN: Select AI Model` — Choose which language model to use
+
 ---
 
 ![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/NavAI-B.svn-scm-modified)

@@ -61,8 +61,13 @@
   "command.svn.treeview.pullIncomingChange.title": "Update selected",
   "command.svn.treeview.refreshProvider.title": "Refresh",
   "command.svn.update.title": "Update",
+  "command.svn.generateCommitMessage.title": "Generate Commit Message (AI)",
+  "command.svn.selectAIModel.title": "Select AI Model",
 
   "configuration.title": "SVN",
+  "configuration.svn.ai.enabled.description": "Enable AI-powered commit message generation using VS Code Language Model API (e.g., GitHub Copilot)",
+  "configuration.svn.ai.model.description": "Specify the language model to use in 'vendor/family' format (e.g., 'copilot/gpt-4o'). Leave null to auto-select the first available model.",
+  "configuration.svn.ai.prompt.description": "Custom prompt template for AI commit message generation. Use '{diff}' as placeholder for the diff content and '{language}' for the current VS Code locale (e.g., 'zh-cn', 'en'). Leave null to use the default prompt.",
   "configuration.svn.autorefresh.description": "Whether auto refreshing is enabled",
   "configuration.svn.commit.changes.selectedAll.description": "Select all files when commit changes",
   "configuration.svn.commit.checkEmptyMessage.description": "Check empty message before commit",

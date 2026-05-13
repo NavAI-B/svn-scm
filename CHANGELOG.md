@@ -1,3 +1,18 @@
+## 2.18.0 (2026-05-13)
+
+### Features
+
+* add AI-powered commit message generation using VS Code Language Model API (e.g., GitHub Copilot)
+* add sparkle button (✨) in SCM title bar to generate commit messages
+* add `svn.selectAIModel` command with QuickPick model selection
+* support custom AI prompt template with `{diff}` and `{language}` placeholders
+* support specifying language model via `svn.ai.model` setting
+* auto-detect VS Code display language for localized commit messages
+
+### Bug Fixes
+
+* fix `svn.branchchanges.refresh` command missing
+
 ## 2.17.3 (2026-04-26)
 
 ### Bug Fixes

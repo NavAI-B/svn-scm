@@ -2,7 +2,7 @@
     "name": "svn-scm-modified",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "2.17.3",
+    "version": "2.18.0",
     "publisher": "NavAI-B",
     "engines": {
         "vscode": "^1.117.0"
@@ -158,6 +158,12 @@
                 "title": "%command.svn.branchchanges.openDiff.title%"
             },
             {
+                "command": "svn.branchchanges.refresh",
+                "category": "SVN",
+                "title": "%command.svn.branchchanges.refresh.title%",
+                "icon": "$(refresh)"
+            },
+            {
                 "command": "svn.changelist",
                 "title": "%command.svn.changelist.title%",
                 "category": "SVN",
@@ -193,6 +199,17 @@
             {
                 "command": "svn.deleteUnversioned",
                 "title": "%command.svn.deleteUnversioned.title%",
+                "category": "SVN"
+            },
+            {
+                "command": "svn.generateCommitMessage",
+                "title": "%command.svn.generateCommitMessage.title%",
+                "category": "SVN",
+                "icon": "$(sparkle)"
+            },
+            {
+                "command": "svn.selectAIModel",
+                "title": "%command.svn.selectAIModel.title%",
                 "category": "SVN"
             },
             {
@@ -750,6 +767,11 @@
                     "when": "config.svn.enabled && scmProvider == svn"
                 },
                 {
+                    "command": "svn.generateCommitMessage",
+                    "group": "navigation",
+                    "when": "config.svn.enabled && config.svn.ai.enabled && scmProvider == svn"
+                },
+                {
                     "command": "svn.refresh",
                     "group": "navigation",
                     "when": "config.svn.enabled && scmProvider == svn"
@@ -985,6 +1007,27 @@
                     "type": "boolean",
                     "description": "%configuration.svn.autorefresh.description%",
                     "default": true
+                },
+                "svn.ai.enabled": {
+                    "type": "boolean",
+                    "description": "%configuration.svn.ai.enabled.description%",
+                    "default": true
+                },
+                "svn.ai.model": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "%configuration.svn.ai.model.description%",
+                    "default": null
+                },
+                "svn.ai.prompt": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "%configuration.svn.ai.prompt.description%",
+                    "default": null
                 },
                 "svn.commit.changes.selectedAll": {
                     "type": "boolean",
