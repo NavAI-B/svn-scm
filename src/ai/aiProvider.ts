@@ -48,9 +48,7 @@ export class AIProvider {
       .replace("{language}", language)
       .replace("{diff}", diff);
 
-    const messages = [
-      LanguageModelChatMessage.User(prompt)
-    ];
+    const messages = [LanguageModelChatMessage.User(prompt)];
 
     const response: LanguageModelChatResponse = await model.sendRequest(
       messages,

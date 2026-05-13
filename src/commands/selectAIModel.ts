@@ -42,13 +42,14 @@ export class SelectAIModel extends Command {
         detail: model.id,
         vendor: model.vendor,
         family: model.family,
-        picked:
-          currentModel === `${model.vendor}/${model.family}`
+        picked: currentModel === `${model.vendor}/${model.family}`
       }))
     ];
 
     const selected = await window.showQuickPick<ModelQuickPickItem>(items, {
-      placeHolder: l10n.t("Select a language model for AI commit message generation")
+      placeHolder: l10n.t(
+        "Select a language model for AI commit message generation"
+      )
     });
 
     if (!selected) {
