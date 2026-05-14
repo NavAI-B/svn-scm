@@ -29,6 +29,9 @@
         "subversion"
     ],
     "main": "./out/extension",
+    "activationEvents": [
+        "onStartupFinished"
+    ],
     "scripts": {
         "build": "npm run build:ts && npm run build:css",
         "build:css": "npx sass scss/:css/ --style compressed --no-source-map",
