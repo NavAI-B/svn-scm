@@ -39,6 +39,7 @@ import { PathNormalizer } from "./pathNormalizer";
 import { IRemoteRepository } from "./remoteRepository";
 import { Resource } from "./resource";
 import { StatusBarCommands } from "./statusbar/statusBarCommands";
+import { SvnDecorations } from "./decorationProvider";
 import { svnErrorCodes } from "./svn";
 import { Repository as BaseRepository } from "./svnRepository";
 import { toSvnUri } from "./uri";
@@ -317,6 +318,22 @@ export class Repository implements IRemoteRepository {
     });
 
     this.status();
+
+    // Register file decoration provider for explorer/editor decorations
+    const svnDecorations = new SvnDecorations(() => {
+      const groups: ISvnResourceGroup[] = [
+        this.changes,
+        this.stagedChanges,
+        this.conflicts,
+        this.unversioned
+      ];
+      if (this.remoteChanges) {
+        groups.push(this.remoteChanges);
+      }
+      this.changelists.forEach(group => groups.push(group));
+      return groups;
+    }, this.onDidChangeStatus);
+    this.disposables.push(svnDecorations);
 
     this.disposables.push(
       workspace.onDidSaveTextDocument(document => {

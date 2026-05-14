@@ -1,3 +1,10 @@
+## 2.18.2 (2026-05-14)
+
+### Features
+
+* add file decoration provider for explorer/editor tab status badges (colored letters like Git)
+* SCM view now shows colored status letters (M, A, D, C, etc.) instead of SVG icons, consistent with Git behavior
+
 ## 2.18.1 (2026-05-13)
 
 ### Features
