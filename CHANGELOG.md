@@ -1,3 +1,9 @@
+## 2.18.3 (2026-05-14)
+
+### Features
+
+* add `onStartupFinished` activation event so the extension auto-loads without clicking the sidebar icon
+
 ## 2.18.2 (2026-05-14)
 
 ### Features
