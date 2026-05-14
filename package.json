@@ -2,10 +2,10 @@
     "name": "svn-scm-modified",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "2.18.3",
+    "version": "2.18.4",
     "publisher": "NavAI-B",
     "engines": {
-        "vscode": "^1.117.0"
+        "vscode": "^1.120.0"
     },
     "private": true,
     "enabledApiProposals": [],
@@ -61,7 +61,7 @@
         "@types/node": "^22.0.0",
         "@types/semver": "^7.7.0",
         "@types/tmp": "^0.2.6",
-        "@types/vscode": "1.116.0",
+        "@types/vscode": "1.120.0",
         "@types/xml2js": "^0.4.14",
         "@typescript-eslint/eslint-plugin": "^8.30.0",
         "@typescript-eslint/parser": "^8.30.0",
@@ -91,7 +91,9 @@
     },
     "overrides": {
         "diff": "^8.0.2",
+        "ip-address": "^10.1.1",
         "serialize-javascript": "^7.0.0",
+        "socks": "^2.8.9",
         "uuid": "^14.0.0"
     },
     "config": {

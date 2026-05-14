@@ -1,3 +1,11 @@
+## 2.18.4 (2026-05-14)
+
+### Miscellaneous
+
+* update `engines.vscode` to `^1.120.0` and `@types/vscode` to `1.120.0`
+* fix `ip-address@10.1.0` vulnerability (CVE: XSS in Address6 HTML-emitting methods) via overrides
+* update `npm` bundled dependency from `11.13.0` to `11.14.1`
+
 ## 2.18.3 (2026-05-14)
 
 ### Features

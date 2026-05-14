@@ -69,6 +69,29 @@ Generate commit messages using AI (GitHub Copilot or other VS Code Language Mode
 - `SVN: Generate Commit Message (AI)` — Generate and fill commit message
 - `SVN: Select AI Model` — Choose which language model to use
 
+### 5. Staging Area (Virtual Changelist)
+
+A Git-like staging workflow for SVN. Stage specific files before committing instead of using a file picker popup. Staged files are persisted across sessions.
+
+**Commands:**
+
+- `SVN: Stage` — Stage a file for commit
+- `SVN: Unstage` — Unstage a file
+- `SVN: Stage All` — Stage all changes
+- `SVN: Unstage All` — Unstage all files
+
+**Behavior:**
+
+- Commit uses staged files directly (no popup)
+- Staged files persist across VS Code sessions via workspace state
+
+### 6. File Decoration & Status Badges
+
+Colored status letters in the SCM view and explorer/editor tabs, consistent with Git behavior:
+
+- **SCM View** — Shows colored status letters (M, A, D, C, etc.) instead of SVG icons
+- **Explorer & Editor Tabs** — File decoration badges show SVN status with colors
+
 ---
 
 ![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/NavAI-B.svn-scm-modified)
