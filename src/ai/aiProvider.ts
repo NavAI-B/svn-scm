@@ -81,15 +81,7 @@ export class AIProvider {
     const modelConfig = configuration.get<string>("ai.model");
 
     if (modelConfig) {
-      const [vendor, family] = modelConfig.split("/");
-      const selector: Record<string, string> = {};
-      if (vendor) {
-        selector.vendor = vendor;
-      }
-      if (family) {
-        selector.family = family;
-      }
-      const models = await lm.selectChatModels(selector);
+      const models = await lm.selectChatModels({ id: modelConfig });
       if (models.length > 0) {
         return models;
       }

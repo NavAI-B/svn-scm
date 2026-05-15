@@ -5,8 +5,7 @@ import { Command } from "./command";
 import { configuration } from "../helpers/configuration";
 
 interface ModelQuickPickItem extends QuickPickItem {
-  vendor: string;
-  family: string;
+  modelId: string;
 }
 
 export class SelectAIModel extends Command {
@@ -32,17 +31,15 @@ export class SelectAIModel extends Command {
       {
         label: l10n.t("Auto Select"),
         description: l10n.t("Use first available model"),
-        vendor: "",
-        family: "",
+        modelId: "",
         picked: !currentModel
       },
       ...models.map(model => ({
         label: model.name,
         description: `${model.vendor}/${model.family}`,
         detail: model.id,
-        vendor: model.vendor,
-        family: model.family,
-        picked: currentModel === `${model.vendor}/${model.family}`
+        modelId: model.id,
+        picked: currentModel === model.id
       }))
     ];
 
@@ -56,10 +53,7 @@ export class SelectAIModel extends Command {
       return;
     }
 
-    const value =
-      selected.vendor && selected.family
-        ? `${selected.vendor}/${selected.family}`
-        : undefined;
+    const value = selected.modelId || undefined;
 
     await configuration.update("ai.model", value ?? null);
   }

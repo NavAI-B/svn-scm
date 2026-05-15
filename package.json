@@ -2,7 +2,7 @@
     "name": "svn-scm-modified",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "2.19.0",
+    "version": "2.19.1",
     "publisher": "NavAI-B",
     "engines": {
         "vscode": "^1.120.0"

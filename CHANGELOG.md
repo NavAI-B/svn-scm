@@ -1,3 +1,9 @@
+## 2.19.1 (2026-05-15)
+
+### Bug Fixes
+
+* **AI Model Selection** — Fix model identifier stored as `vendor/family` instead of unique `model.id`, causing third-party LM providers (e.g. OAICopilot) to lose specific model selection
+
 ## 2.19.0 (2026-05-15)
 
 ### Features
