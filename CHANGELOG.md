@@ -1,3 +1,27 @@
+## 2.19.0 (2026-05-15)
+
+### Features
+
+* **SCM Graph Integration** — Add `SvnHistoryProvider` to integrate with VS Code's built-in SCM Source Control Graph view, showing commit history with diff details
+* **Incoming Changes View** — Move remote changes from SCM resource group to a dedicated tree view under the SCM sidebar, with tree/list toggle support
+* **View Migration** — Migrate all views (File History, Branch Changes, Incoming Changes) from the separate SVN activity bar to the SCM sidebar for a unified experience
+* Add `svn.incomingChanges.treeView` setting to toggle between folder tree and flat list view for incoming changes
+* Add `svn.incomingChanges.refresh` and `svn.incomingChanges.toggleView` commands
+* Enable `scmHistoryProvider` and `contribSourceControlHistoryTitleMenu` proposed APIs
+
+### Breaking Changes
+
+* **Removed** SVN activity bar (`svnActivity`) — all views now live in the SCM sidebar
+* **Removed** `repolog` (Repositories) view and all related commands (`svn.repolog.*`)
+* **Removed** SVN tree view from Explorer sidebar (`svn` view)
+* **Removed** `remotechanges` SCM resource group — replaced by the new Incoming Changes view
+* **Removed** `svn.treeview.refreshProvider` command — replaced by `svn.incomingChanges.refresh`
+
+### Miscellaneous
+
+* Remove Visual Studio Marketplace badges from README
+* Add `getMaxRevision()` using `svnversion` for accurate mixed-revision working copy support
+
 ## 2.18.4 (2026-05-14)
 
 ### Miscellaneous

@@ -92,12 +92,19 @@ Colored status letters in the SCM view and explorer/editor tabs, consistent with
 - **SCM View** — Shows colored status letters (M, A, D, C, etc.) instead of SVG icons
 - **Explorer & Editor Tabs** — File decoration badges show SVN status with colors
 
----
+### 7. SCM Graph Integration
 
-![Visual Studio Marketplace Release Date](https://img.shields.io/visual-studio-marketplace/release-date/NavAI-B.svn-scm-modified)
-![Visual Studio Marketplace Last Updated](https://img.shields.io/visual-studio-marketplace/last-updated/NavAI-B.svn-scm-modified)
-![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/NavAI-B.svn-scm-modified)
-![Visual Studio Marketplace Rating](https://img.shields.io/visual-studio-marketplace/rating/NavAI-B.svn-scm-modified)
+Integrated with VS Code's built-in **Source Control Graph** view. Commit history is displayed directly in the SCM sidebar with full diff support.
+
+### 8. Incoming Changes View
+
+Remote changes are shown in a dedicated **Incoming Changes** tree view under the SCM sidebar (instead of an SCM resource group), with:
+
+- **Tree/List toggle** — Switch between folder tree and flat list view (`svn.incomingChanges.treeView`)
+- **Pull individual files** — Update selected incoming changes without a full `svn update`
+- **Refresh** — Manually refresh incoming changes
+
+---
 
 ![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/NavAI-B/svn-scm/main.yml?branch=master)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)

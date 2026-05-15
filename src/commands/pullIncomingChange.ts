@@ -1,26 +1,29 @@
-import { window } from "vscode";
+import { Uri, window } from "vscode";
 import { configuration } from "../helpers/configuration";
-import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { Command } from "./command";
+
+interface IIncomingChangeItem {
+  uri: Uri;
+  repository: { pullIncomingChange(path: string): Promise<string> };
+}
 
 export class PullIncommingChange extends Command {
   constructor() {
     super("svn.treeview.pullIncomingChange");
   }
 
-  // TODO: clean this up
   public async execute(...changes: any[]) {
     const showUpdateMessage = configuration.get<boolean>(
       "showUpdateMessage",
       true
     );
 
-    if (changes[0] instanceof IncomingChangeNode) {
+    // Handle IncomingChangeItem from the new IncomingChangesProvider view
+    if (changes[0] && changes[0].uri && changes[0].repository) {
+      const item = changes[0] as IIncomingChangeItem;
       try {
-        const incomingChange = changes[0];
-
-        const result = await incomingChange.repository.pullIncomingChange(
-          incomingChange.uri.fsPath
+        const result = await item.repository.pullIncomingChange(
+          item.uri.fsPath
         );
 
         if (showUpdateMessage) {
@@ -34,6 +37,7 @@ export class PullIncommingChange extends Command {
       return;
     }
 
+    // Handle SCM resource states
     const uris = changes.map(change => change.resourceUri);
 
     await this.runByRepository(uris, async (repository, resources) => {

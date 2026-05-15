@@ -13,14 +13,13 @@ import { CheckActiveEditor } from "./contexts/checkActiveEditor";
 import { OpenRepositoryCount } from "./contexts/openRepositoryCount";
 import { configuration } from "./helpers/configuration";
 import { ItemLogProvider } from "./historyView/itemLogProvider";
-import { RepoLogProvider } from "./historyView/repoLogProvider";
 import * as messages from "./messages";
 import { SourceControlManager } from "./source_control_manager";
 import { Svn } from "./svn";
 import { SvnFinder } from "./svnFinder";
-import SvnProvider from "./treeView/dataProviders/svnProvider";
 import { toDisposable } from "./util";
 import { BranchChangesProvider } from "./historyView/branchChangesProvider";
+import { IncomingChangesProvider } from "./historyView/incomingChangesProvider";
 import { IsSvn19orGreater } from "./contexts/isSvn19orGreater";
 import { IsSvn18orGreater } from "./contexts/isSvn18orGreater";
 import { tempSvnFs } from "./temp_svn_fs";
@@ -48,8 +47,7 @@ async function init(
     sourceControlManager,
     tempSvnFs,
     new SvnFileSystemProvider(sourceControlManager),
-    new SvnProvider(sourceControlManager),
-    new RepoLogProvider(sourceControlManager),
+    new IncomingChangesProvider(sourceControlManager),
     new ItemLogProvider(sourceControlManager),
     new BranchChangesProvider(sourceControlManager),
     new CheckActiveEditor(sourceControlManager),

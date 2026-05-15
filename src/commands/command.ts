@@ -25,7 +25,6 @@ import { applyLineChanges } from "../lineChanges";
 import { SourceControlManager } from "../source_control_manager";
 import { Repository } from "../repository";
 import { Resource } from "../resource";
-import IncomingChangeNode from "../treeView/nodes/incomingChangeNode";
 import { fromSvnUri, toSvnUri } from "../uri";
 import { getSvnDir } from "../util";
 
@@ -344,7 +343,7 @@ export abstract class Command implements Disposable {
   }
 
   protected async openChange(
-    arg?: Resource | Uri | IncomingChangeNode,
+    arg?: Resource | Uri | { uri: Uri; type: string },
     against?: string,
     resourceStates?: SourceControlResourceState[]
   ): Promise<void> {
@@ -357,12 +356,17 @@ export abstract class Command implements Disposable {
       if (resource !== undefined) {
         resources = [resource];
       }
-    } else if (arg instanceof IncomingChangeNode) {
+    } else if (
+      arg &&
+      !(arg instanceof Resource) &&
+      "uri" in arg &&
+      "type" in arg
+    ) {
       const resource = new Resource(
         arg.uri,
         arg.type,
         undefined,
-        arg.props,
+        undefined,
         true
       );
 

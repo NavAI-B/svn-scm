@@ -40,6 +40,7 @@ import { IRemoteRepository } from "./remoteRepository";
 import { Resource } from "./resource";
 import { StatusBarCommands } from "./statusbar/statusBarCommands";
 import { SvnDecorations } from "./decorationProvider";
+import { SvnHistoryProvider } from "./historyProvider";
 import { svnErrorCodes } from "./svn";
 import { Repository as BaseRepository } from "./svnRepository";
 import { toSvnUri } from "./uri";
@@ -72,11 +73,11 @@ function shouldShowProgress(operation: Operation): boolean {
 export class Repository implements IRemoteRepository {
   public sourceControl: SourceControl;
   public statusBar: StatusBarCommands;
+  public historyProvider: SvnHistoryProvider;
   public changes: ISvnResourceGroup;
   public stagedChanges: ISvnResourceGroup;
   public stagedUris: Set<string> = new Set();
   public unversioned: ISvnResourceGroup;
-  public remoteChanges?: ISvnResourceGroup;
   public changelists: Map<string, ISvnResourceGroup> = new Map();
   public conflicts: ISvnResourceGroup;
   private workspaceState: Memento;
@@ -85,6 +86,7 @@ export class Repository implements IRemoteRepository {
   private disposables: Disposable[] = [];
   public currentBranch = "";
   public remoteChangedFiles: number = 0;
+  public remoteChangeStatuses: IFileStatus[] = [];
   public isIncomplete: boolean = false;
   public needCleanUp: boolean = false;
   private remoteChangedUpdateInterval?: ReturnType<typeof setInterval>;
@@ -149,10 +151,6 @@ export class Repository implements IRemoteRepository {
     this.changelists.forEach((group, _changelist) => {
       group.resourceStates = [];
     });
-
-    if (this.remoteChanges) {
-      this.remoteChanges.dispose();
-    }
 
     this.isIncomplete = false;
     this.needCleanUp = false;
@@ -241,6 +239,11 @@ export class Repository implements IRemoteRepository {
     this.sourceControl.quickDiffProvider = this;
     this.disposables.push(this.sourceControl);
 
+    // Register History Provider for SCM Graph view
+    this.historyProvider = new SvnHistoryProvider(repository);
+    this.sourceControl.historyProvider = this.historyProvider;
+    this.disposables.push(this.historyProvider);
+
     this.statusBar = new StatusBarCommands(this);
     this.disposables.push(this.statusBar);
     this.statusBar.onDidChange(
@@ -327,9 +330,6 @@ export class Repository implements IRemoteRepository {
         this.conflicts,
         this.unversioned
       ];
-      if (this.remoteChanges) {
-        groups.push(this.remoteChanges);
-      }
       this.changelists.forEach(group => groups.push(group));
       return groups;
     }, this.onDidChangeStatus);
@@ -439,13 +439,10 @@ export class Repository implements IRemoteRepository {
 
     if (updateFreq) {
       this.run(Operation.StatusRemote);
-    } else {
-      // Remove list of remote changes
-      if (this.remoteChanges) {
-        this.remoteChanges.dispose();
-        this.remoteChanges = undefined;
-      }
     }
+
+    // Update history provider refs (remote revision info)
+    this.historyProvider.updateRefs().catch(() => {});
   }
 
   private onFSChange(_uri: Uri): void {
@@ -621,15 +618,7 @@ export class Repository implements IRemoteRepository {
         : undefined;
 
       if (status.reposStatus) {
-        remoteChanges.push(
-          new Resource(
-            uri,
-            status.reposStatus.item,
-            undefined,
-            status.reposStatus.props,
-            true
-          )
-        );
+        remoteChanges.push(status);
       }
 
       const resource = new Resource(
@@ -773,31 +762,9 @@ export class Repository implements IRemoteRepository {
       0
     );
 
-    // Recreate remoteChanges group to move after unversioned
-    if (!this.remoteChanges || prevChangelistsSize !== this.changelists.size) {
-      /**
-       * Destroy and create for keep at last position
-       */
-      let tempResourceStates: Resource[] = [];
-      if (this.remoteChanges) {
-        tempResourceStates = this.remoteChanges.resourceStates;
-        this.remoteChanges.dispose();
-      }
-
-      this.remoteChanges = this.sourceControl.createResourceGroup(
-        "remotechanges",
-        t("remoteChanges")
-      ) as ISvnResourceGroup;
-
-      this.remoteChanges.repository = this;
-      this.remoteChanges.hideWhenEmpty = true;
-      this.remoteChanges.resourceStates = tempResourceStates;
-    }
-
-    // Update remote changes group
+    // Update remote changes count (for status bar) and history provider refs
     if (checkRemoteChanges) {
-      this.remoteChanges.resourceStates = remoteChanges;
-
+      this.remoteChangeStatuses = remoteChanges;
       if (remoteChanges.length !== this.remoteChangedFiles) {
         this.remoteChangedFiles = remoteChanges.length;
         this._onDidChangeRemoteChangedFiles.fire();
@@ -807,6 +774,9 @@ export class Repository implements IRemoteRepository {
     this._onDidChangeStatus.fire();
 
     this.currentBranch = await this.getCurrentBranch();
+
+    // Update history provider refs after model state is ready
+    this.historyProvider.updateRefs().catch(() => {});
 
     return Promise.resolve();
   }

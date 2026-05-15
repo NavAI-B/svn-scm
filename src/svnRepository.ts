@@ -1,4 +1,5 @@
 import * as path from "path";
+import * as cp from "child_process";
 import * as tmp from "tmp";
 import { Uri, workspace } from "vscode";
 import {
@@ -193,6 +194,51 @@ export class Repository {
     );
 
     return this._infoCache[file];
+  }
+
+  /**
+   * Get the maximum revision number across all items in the working copy.
+   * Uses `svnversion` which is fast and outputs e.g. "4123:4168MS".
+   * TortoiseSVN shows the highest revision in a mixed-revision working copy.
+   */
+  public async getMaxRevision(): Promise<string> {
+    try {
+      const svnDir = path.dirname(this.svn.svnPath);
+      const svnversionExe =
+        process.platform === "win32" ? "svnversion.exe" : "svnversion";
+      const svnversionPath = path.join(svnDir, svnversionExe);
+
+      const output = await new Promise<string>((resolve, reject) => {
+        cp.execFile(
+          svnversionPath,
+          [this.workspaceRoot],
+          {
+            encoding: "utf8",
+            timeout: 10000
+          },
+          (err, stdout) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      });
+
+      // Parse output like "4123:4168MS", "4168M", "4123", etc.
+      // Extract all numbers and take the max
+      const numbers = output.match(/\d+/g);
+      if (numbers && numbers.length > 0) {
+        return String(Math.max(...numbers.map(Number)));
+      }
+    } catch {
+      // Fallback
+    }
+
+    // Fallback to single info revision
+    const info = await this.getInfo();
+    return info.revision;
   }
 
   public async getChanges(): Promise<ISvnPathChange[]> {
