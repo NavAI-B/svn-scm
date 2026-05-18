@@ -4,7 +4,7 @@ import { Repository } from "../repository";
 import { Resource } from "../resource";
 import { Status } from "../common/types";
 
-const MAX_DIFF_LENGTH = 50000;
+const MAX_DIFF_LENGTH = 10000;
 
 /**
  * Collect diff content from the staged changes in the repository
@@ -24,7 +24,8 @@ export async function collectDiff(repository: Repository): Promise<string> {
     return "";
   }
 
-  const diff = await repository.patch(filePaths);
+  const buffer = await repository.patchBuffer(filePaths);
+  const diff = buffer.toString("utf8");
 
   if (diff.length > MAX_DIFF_LENGTH) {
     return diff.substring(0, MAX_DIFF_LENGTH) + "\n... (truncated)";

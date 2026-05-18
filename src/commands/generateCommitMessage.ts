@@ -12,26 +12,19 @@ export class GenerateCommitMessage extends Command {
   }
 
   public async execute(repository: Repository) {
-    const diff = await collectDiff(repository);
-
-    if (!diff || diff.trim().length === 0) {
-      window.showInformationMessage(
-        l10n.t(
-          "No staged changes to generate commit message from. Please stage files first."
-        )
-      );
-      return;
-    }
-
     try {
       const ai = new AIProvider();
+      const diffPromise = collectDiff(repository);
+
       const message = await window.withProgress(
         {
           location: { viewId: "workbench.scm" },
           title: l10n.t("Generating commit message...")
         },
         async (progress, token) => {
-          return ai.generateCommitMessage(diff, progress, token);
+          return ai.prepareAndGenerate(diffPromise, progress, token, text => {
+            repository.inputBox.value = text;
+          });
         }
       );
 
@@ -40,6 +33,17 @@ export class GenerateCommitMessage extends Command {
       }
     } catch (error: unknown) {
       if (error instanceof Error && error.message.includes("cancelled")) {
+        return;
+      }
+      if (
+        error instanceof Error &&
+        error.message.includes("No staged changes")
+      ) {
+        window.showInformationMessage(
+          l10n.t(
+            "No staged changes to generate commit message from. Please stage files first."
+          )
+        );
         return;
       }
       window.showErrorMessage(

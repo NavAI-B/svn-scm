@@ -1,3 +1,19 @@
+## 2.19.3 (2026-05-18)
+
+### Performance
+
+* **AI Streaming Output** — Stream generated commit message to input box in real-time, providing immediate visual feedback during generation
+* **Diff Truncation** — Reduce max diff length from 50000 to 10000 characters, decreasing token count sent to the model and speeding up response
+
+## 2.19.2 (2026-05-15)
+
+### Performance
+
+* **AI Commit Generation** — Mark `Operation.Patch` as read-only to skip unnecessary `updateModelState` (extra `svn status`) after diff collection
+* **AI Commit Generation** — Skip SCM progress bar for Patch operation to reduce UI overhead
+* **AI Commit Generation** — Run diff collection and model selection in parallel instead of sequentially
+* **AI Commit Generation** — Use `patchBuffer` instead of `patch` to skip encoding detection, decode diff as UTF-8 directly
+
 ## 2.19.1 (2026-05-15)
 
 ### Bug Fixes

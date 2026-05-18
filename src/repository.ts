@@ -64,6 +64,7 @@ function shouldShowProgress(operation: Operation): boolean {
     case Operation.CurrentBranch:
     case Operation.Show:
     case Operation.Info:
+    case Operation.Patch:
       return false;
     default:
       return true;

@@ -65,6 +65,62 @@ export class AIProvider {
   }
 
   /**
+   * Select model and collect diff in parallel, then stream response to inputBox
+   */
+  public async prepareAndGenerate(
+    diffPromise: Promise<string>,
+    progress: Progress<{ message?: string }>,
+    token: CancellationToken,
+    onChunk?: (text: string) => void
+  ): Promise<string> {
+    const [diff, models] = await Promise.all([diffPromise, this.selectModel()]);
+
+    if (!diff || diff.trim().length === 0) {
+      throw new Error(
+        l10n.t("No staged changes to generate commit message from.")
+      );
+    }
+
+    if (models.length === 0) {
+      throw new Error(
+        l10n.t(
+          "No language model available. Please install GitHub Copilot or another LM extension."
+        )
+      );
+    }
+
+    const model = models[0];
+    progress.report({
+      message: l10n.t("Generating commit message with {0}...", model.name)
+    });
+
+    const promptTemplate =
+      configuration.get<string>("ai.prompt") || DEFAULT_PROMPT;
+    const language = env.language;
+    const prompt = promptTemplate
+      .replace("{language}", language)
+      .replace("{diff}", diff);
+
+    const messages = [LanguageModelChatMessage.User(prompt)];
+
+    const response: LanguageModelChatResponse = await model.sendRequest(
+      messages,
+      {},
+      token
+    );
+
+    let result = "";
+    for await (const chunk of response.text) {
+      result += chunk;
+      if (onChunk) {
+        onChunk(this.cleanResponse(result));
+      }
+    }
+
+    return this.cleanResponse(result);
+  }
+
+  /**
    * Clean AI response: remove markdown code blocks and extra formatting
    */
   private cleanResponse(text: string): string {
@@ -79,15 +135,15 @@ export class AIProvider {
    */
   private async selectModel(): Promise<LanguageModelChat[]> {
     const modelConfig = configuration.get<string>("ai.model");
+    const allModels = await lm.selectChatModels();
 
     if (modelConfig) {
-      const models = await lm.selectChatModels({ id: modelConfig });
-      if (models.length > 0) {
-        return models;
+      const matched = allModels.filter(m => m.id === modelConfig);
+      if (matched.length > 0) {
+        return matched;
       }
-      // Fallback: configured model not found, try all
     }
 
-    return lm.selectChatModels();
+    return allModels;
   }
 }
