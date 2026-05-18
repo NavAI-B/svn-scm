@@ -8,9 +8,14 @@ import {
   Progress,
   lm,
   l10n,
-  env
+  env,
+  window
 } from "vscode";
 import { configuration } from "../helpers/configuration";
+
+const outputChannel = window.createOutputChannel("SVN AI Commit", {
+  log: true
+});
 
 const DEFAULT_PROMPT =
   "Generate a concise and clear commit message for the following SVN diff. " +
@@ -73,7 +78,14 @@ export class AIProvider {
     token: CancellationToken,
     onChunk?: (text: string) => void
   ): Promise<string> {
+    const totalStart = Date.now();
+    outputChannel.info("[AI Commit] Start");
+
+    const parallelStart = Date.now();
     const [diff, models] = await Promise.all([diffPromise, this.selectModel()]);
+    outputChannel.info(
+      `[AI Commit] Diff + Model selection: ${Date.now() - parallelStart}ms (diff: ${diff.length} chars, model: ${models[0]?.name ?? "none"})`
+    );
 
     if (!diff || diff.trim().length === 0) {
       throw new Error(
@@ -103,19 +115,30 @@ export class AIProvider {
 
     const messages = [LanguageModelChatMessage.User(prompt)];
 
+    const requestStart = Date.now();
     const response: LanguageModelChatResponse = await model.sendRequest(
       messages,
       {},
       token
     );
+    outputChannel.info(
+      `[AI Commit] sendRequest connected: ${Date.now() - requestStart}ms`
+    );
 
     let result = "";
+    let chunkCount = 0;
+    const streamStart = Date.now();
     for await (const chunk of response.text) {
       result += chunk;
+      chunkCount++;
       if (onChunk) {
         onChunk(this.cleanResponse(result));
       }
     }
+    outputChannel.info(
+      `[AI Commit] Stream complete: ${Date.now() - streamStart}ms (${chunkCount} chunks, ${result.length} chars)`
+    );
+    outputChannel.info(`[AI Commit] Total: ${Date.now() - totalStart}ms`);
 
     return this.cleanResponse(result);
   }
