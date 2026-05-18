@@ -1,3 +1,7 @@
+## 2.19.4 (2026-05-18)
+
+* **AI Commit Generation** — Add 'SVN AI Commit' output
+
 ## 2.19.3 (2026-05-18)
 
 ### Performance
