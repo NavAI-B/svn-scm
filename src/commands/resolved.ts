@@ -39,6 +39,8 @@ export class Resolved extends Command {
       const files = resources.map(resource => resource.fsPath);
 
       await repository.resolve(files, "working");
+      // Force refresh to ensure conflict status is cleared
+      await repository.status();
     });
   }
 }

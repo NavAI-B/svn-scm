@@ -1,3 +1,10 @@
+## 2.19.5 (2026-05-18)
+
+### Bug Fixes
+
+* **File Decoration** — Fix staged files still showing as modified after commit by clearing `stagedUris` before `commitFiles()`
+* **Conflict Status** — Fix conflict badge not clearing after resolve by forcing a status refresh
+
 ## 2.19.4 (2026-05-18)
 
 * **AI Commit Generation** — Add 'SVN AI Commit' output

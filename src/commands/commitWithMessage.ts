@@ -55,15 +55,16 @@ export class CommitWithMessage extends Command {
     });
 
     try {
-      const result = await repository.commitFiles(message, filePaths);
-      window.showInformationMessage(result);
-      repository.inputBox.value = "";
-
-      // Remove committed files from staged
+      // Remove committed files from staged BEFORE commit
+      // to avoid updateModelState() running with stale stagedUris
       for (const state of resourceStates) {
         repository.stagedUris.delete(state.resourceUri.fsPath);
       }
       repository.saveStagedUris();
+
+      const result = await repository.commitFiles(message, filePaths);
+      window.showInformationMessage(result);
+      repository.inputBox.value = "";
     } catch (error: unknown) {
       console.error(error);
       window.showErrorMessage((error as any).stderrFormated);

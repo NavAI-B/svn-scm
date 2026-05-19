@@ -33,6 +33,8 @@ export class Resolve extends Command {
       const files = resources.map(resource => resource.fsPath);
 
       await repository.resolve(files, choice.label);
+      // Force refresh to ensure conflict status is cleared
+      await repository.status();
     });
   }
 }
