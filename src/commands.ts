@@ -2,6 +2,10 @@ import { Disposable } from "vscode";
 import { Add } from "./commands/add";
 import { AddToIgnoreExplorer } from "./commands/addToIgnoreExplorer";
 import { AddToIgnoreSCM } from "./commands/addToIgnoreSCM";
+import { Blame } from "./commands/blame";
+import { BlameClear } from "./commands/blameClear";
+import { BlameTraceRevision } from "./commands/blameTraceRevision";
+import { BlameTracePreviousRevision } from "./commands/blameTracePreviousRevision";
 import { ChangeList } from "./commands/changeList";
 import { Checkout } from "./commands/checkout";
 import { Cleanup } from "./commands/cleanup";
@@ -52,11 +56,15 @@ import { Stage } from "./commands/stage";
 import { Unstage } from "./commands/unstage";
 import { StageAll } from "./commands/stageAll";
 import { UnstageAll } from "./commands/unstageAll";
+import { BlameProvider } from "./blameProvider";
 
 export function registerCommands(
   sourceControlManager: SourceControlManager,
   disposables: Disposable[]
 ) {
+  const blameProvider = new BlameProvider(sourceControlManager);
+
+  disposables.push(blameProvider);
   disposables.push(new GetSourceControlManager(sourceControlManager));
   disposables.push(new FileOpen());
   disposables.push(new OpenFile());
@@ -109,4 +117,8 @@ export function registerCommands(
   disposables.push(new Unstage());
   disposables.push(new StageAll());
   disposables.push(new UnstageAll());
+  disposables.push(new Blame(blameProvider));
+  disposables.push(new BlameClear(blameProvider));
+  disposables.push(new BlameTraceRevision(blameProvider));
+  disposables.push(new BlameTracePreviousRevision(blameProvider));
 }

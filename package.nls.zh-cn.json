@@ -53,6 +53,10 @@
   "command.svn.unstage.title": "取消暂存",
   "command.svn.stageAll.title": "全部暂存",
   "command.svn.unstageAll.title": "全部取消暂存",
+  "command.svn.blame.title": "追溯",
+  "command.svn.blame.clear.title": "清除追溯注解",
+  "command.svn.blame.traceRevision.title": "追溯以前版本",
+  "command.svn.blame.tracePreviousRevision.title": "从前一版本追溯",
 
   "configuration.title": "SVN",
   "configuration.svn.ai.enabled.description": "启用 AI 生成提交消息功能，使用 VS Code 语言模型 API（如 GitHub Copilot）",

@@ -1,3 +1,9 @@
+## 2.20.0 (2026-05-22)
+
+### Features
+
+* **Blame / Annotate** — New inline blame view with revision-based line coloring, version numbers in the gutter, and author names. Opens in a dedicated tab with hover tooltips showing revision details. Supports right-click "Trace previous revision" and "Trace from previous revision" to navigate blame history.
+
 ## 2.19.6 (2026-05-21)
 
 ### Features

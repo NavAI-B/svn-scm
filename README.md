@@ -164,9 +164,21 @@ You can checkout a SVN repository with the `SVN: Checkout` command in the **Comm
 * Commit changes/changelists
 * See commit messages
 
-## Blame
+## Blame / Annotate
 
-Please use a dedicated extension like [blamer-vs](https://marketplace.visualstudio.com/items?itemName=beaugust.blamer-vs)
+Right-click a file in the Explorer and select **SVN: Blame (Annotate)** to open an inline blame view in a new tab.
+
+- **Line coloring** — Each revision group gets a distinct background color for easy visual scanning
+- **Revision & Author** — Version numbers and author names displayed in the gutter area
+- **Hover tooltips** — Hover any line to see revision details with quick-action links
+- **Trace history** — Right-click to "Trace previous revision" or "Trace from previous revision" and navigate through blame history
+
+**Commands:**
+
+- `SVN: Blame (Annotate)` — Open blame view for a file
+- `SVN: Clear Blame` — Close blame view
+- `SVN: Trace Previous Revision` — (Blame view only) Blame up to the selected line's revision
+- `SVN: Trace From Previous Revision` — (Blame view only) Blame up to one revision before the selected line's revision
 
 ## Settings
 Here are all of the extension settings with their default values. To change any of these, add the relevant Config key and value to your VSCode settings.json file. Alternatively search for the config key in the settings UI to change its value.

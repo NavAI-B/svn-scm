@@ -124,7 +124,8 @@ export enum Operation {
   StatusRemote = "StatusRemote",
   SwitchBranch = "SwitchBranch",
   Update = "Update",
-  List = "List"
+  List = "List",
+  Blame = "Blame"
 }
 
 export interface ISvnResourceGroup extends SourceControlResourceGroup {
@@ -320,4 +321,9 @@ export interface LineChange {
   readonly originalEndLineNumber: number;
   readonly modifiedStartLineNumber: number;
   readonly modifiedEndLineNumber: number;
+}
+
+export interface ISvnBlameInfo {
+  revision: string | undefined;
+  author: string | undefined;
 }

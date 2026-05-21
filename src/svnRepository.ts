@@ -13,7 +13,8 @@ import {
   SvnDepth,
   ISvnPathChange,
   ISvnPath,
-  ISvnListItem
+  ISvnListItem,
+  ISvnBlameInfo
 } from "./common/types";
 import { sequentialize } from "./decorators";
 import * as encodeUtil from "./encoding";
@@ -424,6 +425,89 @@ export class Repository {
     const result = await this.exec(args, { encoding });
 
     return result.stdout;
+  }
+
+  /**
+   * Execute svn blame (annotate) on a file.
+   * Returns an array of per-line blame information.
+   */
+  public async blame(
+    file: string | Uri,
+    revision?: string
+  ): Promise<ISvnBlameInfo[]> {
+    const args = ["blame"];
+
+    let uri: Uri;
+
+    if (file instanceof Uri) {
+      uri = file;
+    } else {
+      uri = Uri.file(file);
+    }
+
+    const isChild =
+      uri.scheme === "file" && isDescendant(this.workspaceRoot, uri.fsPath);
+
+    let target: string = uri.fsPath;
+
+    if (isChild) {
+      target = this.removeAbsolutePath(target);
+    }
+
+    if (revision) {
+      args.push("-r", revision);
+      if (
+        isChild &&
+        !["BASE", "COMMITTED", "PREV"].includes(revision.toUpperCase())
+      ) {
+        const info = await this.getInfo();
+        target = info.url + "/" + target.replace(/\\/g, "/");
+      }
+    }
+
+    args.push(target);
+
+    const result = await this.exec(args);
+
+    return this.parseBlameOutput(result.stdout);
+  }
+
+  /**
+   * Parse svn blame output.
+   * Format: "   revision author    date       line_content"
+   * Or with -g: "   revision author    date       line_content"
+   */
+  private parseBlameOutput(output: string): ISvnBlameInfo[] {
+    const lines = output.split(/\r?\n/);
+    const result: ISvnBlameInfo[] = [];
+
+    for (const line of lines) {
+      if (!line.trim()) {
+        continue;
+      }
+
+      // SVN blame output format:
+      // "   12345 username       2024-01-15 10:30:00 +0800 (Mon, 15 Jan 2024) content"
+      // Or without date: "   12345 username    content"
+      // Or for binary/modified: "   -         -    -        content"
+      const match = line.match(/^\s*(\d+|-)\s+(\S+)\s+(.*)$/);
+
+      if (match) {
+        const revision = match[1];
+        const author = match[2];
+        result.push({
+          revision: revision === "-" ? undefined : revision,
+          author: author === "-" ? undefined : author
+        });
+      } else {
+        result.push({
+          revision: undefined,
+          author: undefined
+        });
+      }
+    }
+
+    return result;
   }
 
   public async showBuffer(

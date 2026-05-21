@@ -30,7 +30,8 @@ import {
   SvnUriAction,
   ISvnPathChange,
   IStoredAuth,
-  ISvnListItem
+  ISvnListItem,
+  ISvnBlameInfo
 } from "./common/types";
 import { debounce, globalSequentialize, memoize, throttle } from "./decorators";
 import { exists } from "./fs";
@@ -853,6 +854,15 @@ export class Repository implements IRemoteRepository {
   ): Promise<Buffer> {
     return this.run<Buffer>(Operation.Show, () => {
       return this.repository.showBuffer(filePath, revision);
+    });
+  }
+
+  public async blame(
+    filePath: string | Uri,
+    revision?: string
+  ): Promise<ISvnBlameInfo[]> {
+    return this.run<ISvnBlameInfo[]>(Operation.Blame, () => {
+      return this.repository.blame(filePath, revision);
     });
   }
 

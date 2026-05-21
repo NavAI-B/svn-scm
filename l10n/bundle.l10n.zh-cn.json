@@ -30,5 +30,11 @@
   "Conflicts": "冲突",
   "Unversioned": "未版本控制",
   "Changelist \"{0}\"": "变更列表 \"{0}\"",
-  "Remote Changes": "远程变更"
+  "Remote Changes": "远程变更",
+  "No SVN repository found for this file.": "未找到该文件的 SVN 仓库。",
+  "No revision info for this line.": "该行没有版本信息。",
+  "Already at the earliest revision.": "已是最早版本。",
+  "No blame info available": "无追溯信息",
+  "Trace previous revision": "追溯以前版本",
+  "Trace from previous revision": "从前一版本追溯"
 }

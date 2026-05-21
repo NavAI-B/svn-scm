@@ -2,7 +2,7 @@
     "name": "svn-scm-modified",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "2.19.6",
+    "version": "2.20.0",
     "publisher": "NavAI-B",
     "engines": {
         "vscode": "^1.120.0"
@@ -35,7 +35,8 @@
     ],
     "main": "./out/extension",
     "activationEvents": [
-        "onStartupFinished"
+        "onStartupFinished",
+        "onFileSystem:svn"
     ],
     "scripts": {
         "build": "npm run build:ts && npm run build:css",
@@ -391,6 +392,28 @@
                 "title": "%command.svn.update.title%",
                 "category": "SVN",
                 "icon": "$(cloud-download)"
+            },
+            {
+                "command": "svn.blame",
+                "title": "%command.svn.blame.title%",
+                "category": "SVN",
+                "icon": "$(eye)"
+            },
+            {
+                "command": "svn.blame.clear",
+                "title": "%command.svn.blame.clear.title%",
+                "category": "SVN",
+                "icon": "$(close)"
+            },
+            {
+                "command": "svn.blame.traceRevision",
+                "title": "%command.svn.blame.traceRevision.title%",
+                "category": "SVN"
+            },
+            {
+                "command": "svn.blame.tracePreviousRevision",
+                "title": "%command.svn.blame.tracePreviousRevision.title%",
+                "category": "SVN"
             }
         ],
         "menus": {
@@ -558,6 +581,22 @@
                 {
                     "command": "svn.update",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
+                    "command": "svn.blame",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
+                    "command": "svn.blame.clear",
+                    "when": "config.svn.enabled && svnBlameActive"
+                },
+                {
+                    "command": "svn.blame.traceRevision",
+                    "when": "false"
+                },
+                {
+                    "command": "svn.blame.tracePreviousRevision",
+                    "when": "false"
                 }
             ],
             "view/title": [
@@ -801,6 +840,16 @@
                     "command": "svn.openChangeHead",
                     "group": "navigation",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && svnActiveEditorHasChanges && !isInDiffEditor && resourceScheme == file"
+                },
+                {
+                    "command": "svn.blame",
+                    "group": "navigation",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0 && !svnBlameActive && resourceScheme == file"
+                },
+                {
+                    "command": "svn.blame.clear",
+                    "group": "navigation",
+                    "when": "config.svn.enabled && svnBlameActive"
                 }
             ],
             "explorer/context": [
@@ -823,6 +872,23 @@
                     "command": "svn.revertExplorer",
                     "group": "7_modification",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                },
+                {
+                    "command": "svn.blame",
+                    "group": "9_svn",
+                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
+                }
+            ],
+            "editor/context": [
+                {
+                    "command": "svn.blame.traceRevision",
+                    "group": "svn@1",
+                    "when": "config.svn.enabled && svnBlameActive && resourceScheme == svn"
+                },
+                {
+                    "command": "svn.blame.tracePreviousRevision",
+                    "group": "svn@2",
+                    "when": "config.svn.enabled && svnBlameActive && resourceScheme == svn"
                 }
             ]
         },

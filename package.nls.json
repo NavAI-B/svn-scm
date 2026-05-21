@@ -53,6 +53,10 @@
   "command.svn.unstage.title": "Unstage",
   "command.svn.stageAll.title": "Stage All",
   "command.svn.unstageAll.title": "Unstage All",
+  "command.svn.blame.title": "Blame",
+  "command.svn.blame.clear.title": "Clear Blame Annotations",
+  "command.svn.blame.traceRevision.title": "Trace Previous Revision",
+  "command.svn.blame.tracePreviousRevision.title": "Trace from Previous Revision",
 
   "configuration.title": "SVN",
   "configuration.svn.ai.enabled.description": "Enable AI-powered commit message generation using VS Code Language Model API (e.g., GitHub Copilot)",
