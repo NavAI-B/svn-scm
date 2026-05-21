@@ -12,7 +12,7 @@ import { ConstructorPolicy } from "./common/types";
 import { CheckActiveEditor } from "./contexts/checkActiveEditor";
 import { OpenRepositoryCount } from "./contexts/openRepositoryCount";
 import { configuration } from "./helpers/configuration";
-import { ItemLogProvider } from "./historyView/itemLogProvider";
+import { SvnTimelineProvider } from "./timelineProvider";
 import * as messages from "./messages";
 import { SourceControlManager } from "./source_control_manager";
 import { Svn } from "./svn";
@@ -48,7 +48,7 @@ async function init(
     tempSvnFs,
     new SvnFileSystemProvider(sourceControlManager),
     new IncomingChangesProvider(sourceControlManager),
-    new ItemLogProvider(sourceControlManager),
+    new SvnTimelineProvider(sourceControlManager),
     new BranchChangesProvider(sourceControlManager),
     new CheckActiveEditor(sourceControlManager),
     new OpenRepositoryCount(sourceControlManager),

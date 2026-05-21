@@ -5,11 +5,13 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import {
   commands,
   env,
+  MarkdownString,
   TextDocumentShowOptions,
   ThemeIcon,
   TreeItem,
   Uri,
-  window
+  window,
+  l10n
 } from "vscode";
 import { ISvnLogEntry, ISvnLogEntryPath } from "../common/types";
 import { exists, lstat } from "../fs";
@@ -241,15 +243,118 @@ export function getCommitLabel(commit: ISvnLogEntry): string {
   return commit.msg.split(/\r?\n/, 1)[0];
 }
 
-export function getCommitToolTip(commit: ISvnLogEntry): string {
-  let date = commit.date;
-  if (!isNaN(Date.parse(date))) {
-    date = new Date(date).toString();
+export function getCommitToolTip(commit: ISvnLogEntry): MarkdownString {
+  const markdown = new MarkdownString("", true);
+
+  // Author
+  if (commit.author) {
+    markdown.appendMarkdown("$(account)&nbsp;");
+    markdown.appendMarkdown("**");
+    markdown.appendText(commit.author);
+    markdown.appendMarkdown("**");
   }
-  return `Author: ${commit.author}
-${date}
-Revision: ${commit.revision}
-Message: ${commit.msg}`;
+
+  // Date
+  if (commit.date && !isNaN(Date.parse(commit.date))) {
+    const date = new Date(commit.date);
+    markdown.appendMarkdown(", $(history)&nbsp;");
+    markdown.appendText(getCommitRelativeDate(date));
+    markdown.appendMarkdown(` (${formatCommitDate(date)})`);
+  }
+
+  markdown.appendMarkdown("\n\n---\n\n");
+
+  // Message
+  markdown.appendText(commit.msg || `(r${commit.revision})`);
+
+  // File stats with colored action counts
+  if (commit.paths && commit.paths.length > 0) {
+    const added = commit.paths.filter(p => p.action === "A").length;
+    const modified = commit.paths.filter(p => p.action === "M").length;
+    const deleted = commit.paths.filter(p => p.action === "D").length;
+    const replaced = commit.paths.filter(p => p.action === "R").length;
+
+    const parts: string[] = [];
+    if (added > 0) {
+      parts.push(
+        `<span style="color:var(--vscode-scmGraph-historyItemHoverAdditionsForeground);">${l10n.t("{0} added", added)}</span>`
+      );
+    }
+    if (modified > 0) {
+      parts.push(
+        `<span style="color:var(--vscode-descriptionForeground);">${l10n.t("{0} modified", modified)}</span>`
+      );
+    }
+    if (deleted > 0) {
+      parts.push(
+        `<span style="color:var(--vscode-scmGraph-historyItemHoverDeletionsForeground);">${l10n.t("{0} deleted", deleted)}</span>`
+      );
+    }
+    if (replaced > 0) {
+      parts.push(`<span>${l10n.t("{0} replaced", replaced)}</span>`);
+    }
+
+    if (parts.length > 0) {
+      markdown.appendMarkdown("\n\n---\n\n");
+      markdown.supportHtml = true;
+      markdown.appendMarkdown(parts.join(",&nbsp;"));
+    }
+  }
+
+  return markdown;
+}
+
+/** Simple relative time formatter for commit tooltips */
+function getCommitRelativeDate(date: Date): string {
+  const now = Date.now();
+  const diffMs = now - date.getTime();
+
+  if (diffMs < 0) {
+    return l10n.t("just now");
+  }
+
+  const seconds = Math.floor(diffMs / 1000);
+  if (seconds < 60) {
+    return l10n.t("{0} seconds ago", seconds);
+  }
+
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) {
+    return minutes === 1
+      ? l10n.t("1 minute ago")
+      : l10n.t("{0} minutes ago", minutes);
+  }
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return hours === 1 ? l10n.t("1 hour ago") : l10n.t("{0} hours ago", hours);
+  }
+
+  const days = Math.floor(hours / 24);
+  if (days < 30) {
+    return days === 1 ? l10n.t("1 day ago") : l10n.t("{0} days ago", days);
+  }
+
+  const months = Math.floor(days / 30);
+  if (months < 12) {
+    return months === 1
+      ? l10n.t("1 month ago")
+      : l10n.t("{0} months ago", months);
+  }
+
+  const years = Math.floor(days / 365);
+  return years === 1 ? l10n.t("1 year ago") : l10n.t("{0} years ago", years);
+}
+
+/** Format a date to a localized string */
+function formatCommitDate(date: Date): string {
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
 async function downloadFile(

@@ -1,5 +1,5 @@
 import * as path from "path";
-import { commands, Uri, ViewColumn, WebviewPanel, window } from "vscode";
+import { commands, Uri, ViewColumn, WebviewPanel, window, l10n } from "vscode";
 import { SourceControlManager } from "./source_control_manager";
 import { configuration } from "./helpers/configuration";
 
@@ -97,7 +97,7 @@ async function showCommitInput(message?: string, filePaths?: string[]) {
           <a href="#" id="pickCommitMessage">Pick a previous commit message</a>
         </div>
         <label for="message">Commit message</label>
-        <textarea id="message" rows="3" placeholder="Message (press Ctrl+Enter to commit)"></textarea>
+        <textarea id="message" rows="3" placeholder="${l10n.t("Message (press Ctrl+Enter to commit)")}"></textarea>
         <button id="commit" class="button-primary">Commit</button>
         <div class="float-right">
           <button id="cancel" class="button button-outline">Cancel</button>

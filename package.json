@@ -2,15 +2,17 @@
     "name": "svn-scm-modified",
     "displayName": "%displayName%",
     "description": "%description%",
-    "version": "2.19.5",
+    "version": "2.19.6",
     "publisher": "NavAI-B",
     "engines": {
         "vscode": "^1.120.0"
     },
     "private": true,
+    "l10n": "./l10n",
     "enabledApiProposals": [
         "scmHistoryProvider",
-        "contribSourceControlHistoryTitleMenu"
+        "contribSourceControlHistoryTitleMenu",
+        "timeline"
     ],
     "icon": "images/subversion.png",
     "homepage": "https://github.com/NavAI-B/svn-scm/blob/master/README.md",
@@ -108,13 +110,6 @@
         "viewsContainers": {},
         "views": {
             "scm": [
-                {
-                    "id": "itemlog",
-                    "name": "%views.scm.itemlog.name%",
-                    "icon": "icons/subversion-logo.svg",
-                    "when": "config.svn.enabled && svnOpenRepositoryCount != 0",
-                    "visibility": "hidden"
-                },
                 {
                     "id": "incomingChanges",
                     "name": "%views.scm.incomingChanges.name%",
@@ -230,37 +225,6 @@
                 "title": "%command.svn.unstageAll.title%",
                 "category": "SVN",
                 "icon": "$(remove)"
-            },
-            {
-                "command": "svn.itemlog.copymsg",
-                "category": "SVN",
-                "title": "%command.svn.itemlog.copymsg.title%"
-            },
-            {
-                "command": "svn.itemlog.copyrevision",
-                "category": "SVN",
-                "title": "%command.svn.itemlog.copyrevision.title%"
-            },
-            {
-                "command": "svn.itemlog.openDiff",
-                "title": "%command.svn.itemlog.openDiff.title%",
-                "category": "SVN"
-            },
-            {
-                "command": "svn.itemlog.openDiffBase",
-                "title": "%command.svn.itemlog.openDiffBase.title%",
-                "category": "SVN"
-            },
-            {
-                "command": "svn.itemlog.openFileRemote",
-                "title": "%command.svn.itemlog.openFileRemote.title%",
-                "category": "SVN"
-            },
-            {
-                "command": "svn.itemlog.refresh",
-                "category": "SVN",
-                "title": "%command.svn.itemlog.refresh.title%",
-                "icon": "$(refresh)"
             },
             {
                 "command": "svn.log",
@@ -480,30 +444,6 @@
                     "when": "false"
                 },
                 {
-                    "command": "svn.itemlog.copymsg",
-                    "when": "false"
-                },
-                {
-                    "command": "svn.itemlog.copyrevision",
-                    "when": "false"
-                },
-                {
-                    "command": "svn.itemlog.openDiff",
-                    "when": "false"
-                },
-                {
-                    "command": "svn.itemlog.openDiffBase",
-                    "when": "false"
-                },
-                {
-                    "command": "svn.itemlog.openFileRemote",
-                    "when": "false"
-                },
-                {
-                    "command": "svn.itemlog.refresh",
-                    "when": "false"
-                },
-                {
                     "command": "svn.log",
                     "when": "config.svn.enabled && svnOpenRepositoryCount != 0"
                 },
@@ -632,11 +572,6 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "svn.itemlog.refresh",
-                    "when": "view == itemlog",
-                    "group": "navigation"
-                },
-                {
                     "command": "svn.branchchanges.refresh",
                     "when": "view == branchchanges",
                     "group": "navigation"
@@ -658,28 +593,6 @@
                 {
                     "command": "svn.openChangeHead",
                     "when": "view == incomingChanges && viewItem == incomingChange:modified"
-                },
-                {
-                    "command": "svn.itemlog.openFileRemote",
-                    "when": "view == itemlog && viewItem == diffable"
-                },
-                {
-                    "command": "svn.itemlog.openDiff",
-                    "when": "view == itemlog && viewItem == diffable",
-                    "group": "1_diff"
-                },
-                {
-                    "command": "svn.itemlog.openDiffBase",
-                    "when": "view == itemlog && viewItem == diffable",
-                    "group": "1_diff"
-                },
-                {
-                    "command": "svn.itemlog.copymsg",
-                    "when": "view == itemlog && viewItem == diffable"
-                },
-                {
-                    "command": "svn.itemlog.copyrevision",
-                    "when": "view == itemlog && viewItem == diffable"
                 }
             ],
             "scm/title": [

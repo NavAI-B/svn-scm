@@ -96,7 +96,17 @@ Colored status letters in the SCM view and explorer/editor tabs, consistent with
 
 Integrated with VS Code's built-in **Source Control Graph** view. Commit history is displayed directly in the SCM sidebar with full diff support.
 
-### 8. Incoming Changes View
+### 8. Timeline Integration
+
+File history is displayed in VS Code's native **Timeline** panel (Explorer sidebar). Right-click any SVN-managed file and select "Open Timeline" to view its commit history with:
+
+- **Auto-follow editor** — Timeline automatically updates when switching files
+- **Pagination** — Built-in scroll-to-load-more support
+- **Diff viewing** — Click any commit to open a diff view
+- **Markdown tooltips** — Rich hover information with author, date, message, and file stats
+- **Context menu** — Open specific revision, copy revision number, copy message
+
+### 9. Incoming Changes View
 
 Remote changes are shown in a dedicated **Incoming Changes** tree view under the SCM sidebar (instead of an SCM resource group), with:
 

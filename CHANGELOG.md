@@ -1,3 +1,21 @@
+## 2.19.6 (2026-05-21)
+
+### Features
+
+* **Timeline Integration** — Replace the old File History tree view with VS Code's native Timeline API. File history is now displayed in the Explorer sidebar's Timeline panel, automatically following the active editor. Supports pagination, diff viewing, and Markdown tooltips.
+* **Localization (l10n)** — Migrate all user-facing strings to VS Code's official `l10n` API with `bundle.l10n.json` / `bundle.l10n.zh-cn.json` files. Replaces the custom `i18n.ts` module.
+
+### Bug Fixes
+
+* **Webpack Bundling** — Fix `jschardet` missing dependency error by correctly applying the `IGNORED` modules array to webpack externals
+* **SCM History Hover** — Fix hover tooltip not showing in SCM Graph history view by properly setting the `tooltip` field on history items
+
+### Breaking Changes
+
+* **Removed** `itemlog` SCM sidebar view — replaced by VS Code's native Timeline view (right-click a file → "Open Timeline")
+* **Removed** all `svn.itemlog.*` commands
+* **Removed** `src/i18n.ts` — replaced by VS Code `l10n` API
+
 ## 2.19.5 (2026-05-18)
 
 ### Bug Fixes

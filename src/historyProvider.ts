@@ -5,7 +5,9 @@
 
 import {
   CancellationToken,
+  commands,
   Disposable,
+  env,
   Event,
   EventEmitter,
   MarkdownString,
@@ -15,11 +17,102 @@ import {
   SourceControlHistoryItemRefsChangeEvent,
   SourceControlHistoryOptions,
   ThemeIcon,
-  Uri
+  Uri,
+  l10n
 } from "vscode";
-import { ISvnPath } from "./common/types";
+import { ISvnPath, ISvnLogEntryPath } from "./common/types";
 import { parseDiffXml } from "./parser/diffParser";
 import { Repository as BaseRepository } from "./svnRepository";
+
+/** Simple relative time formatter (no external dependency needed) */
+function fromNow(date: Date | number): string {
+  const now = Date.now();
+  const then = typeof date === "number" ? date : date.getTime();
+  const diffMs = now - then;
+
+  if (diffMs < 0) {
+    return l10n.t("just now");
+  }
+
+  const seconds = Math.floor(diffMs / 1000);
+  if (seconds < 60) {
+    return l10n.t("{0} seconds ago", seconds);
+  }
+
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) {
+    return minutes === 1
+      ? l10n.t("1 minute ago")
+      : l10n.t("{0} minutes ago", minutes);
+  }
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return hours === 1 ? l10n.t("1 hour ago") : l10n.t("{0} hours ago", hours);
+  }
+
+  const days = Math.floor(hours / 24);
+  if (days < 30) {
+    return days === 1 ? l10n.t("1 day ago") : l10n.t("{0} days ago", days);
+  }
+
+  const months = Math.floor(days / 30);
+  if (months < 12) {
+    return months === 1
+      ? l10n.t("1 month ago")
+      : l10n.t("{0} months ago", months);
+  }
+
+  const years = Math.floor(days / 365);
+  return years === 1 ? l10n.t("1 year ago") : l10n.t("{0} years ago", years);
+}
+
+/** Format a date to a localized string like "2025-01-15 14:30" */
+function formatDate(date: Date): string {
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+/** Build the short-stats section with colored action counts (Added/Modified/Deleted) */
+function buildShortStatsSection(paths: ISvnLogEntryPath[]): MarkdownString {
+  const markdown = new MarkdownString("", true);
+  markdown.supportHtml = true;
+
+  const added = paths.filter(p => p.action === "A").length;
+  const modified = paths.filter(p => p.action === "M").length;
+  const deleted = paths.filter(p => p.action === "D").length;
+  const replaced = paths.filter(p => p.action === "R").length;
+
+  const parts: string[] = [];
+
+  if (added > 0) {
+    parts.push(
+      `<span style="color:var(--vscode-scmGraph-historyItemHoverAdditionsForeground);">${l10n.t("{0} added", added)}</span>`
+    );
+  }
+  if (modified > 0) {
+    parts.push(
+      `<span style="color:var(--vscode-descriptionForeground);">${l10n.t("{0} modified", modified)}</span>`
+    );
+  }
+  if (deleted > 0) {
+    parts.push(
+      `<span style="color:var(--vscode-scmGraph-historyItemHoverDeletionsForeground);">${l10n.t("{0} deleted", deleted)}</span>`
+    );
+  }
+  if (replaced > 0) {
+    parts.push(`<span>${l10n.t("{0} replaced", replaced)}</span>`);
+  }
+
+  markdown.appendMarkdown(parts.join(",&nbsp;"));
+
+  return markdown;
+}
 
 export class SvnHistoryProvider implements Disposable {
   /**
@@ -47,6 +140,15 @@ export class SvnHistoryProvider implements Disposable {
   private disposables: Disposable[] = [];
 
   constructor(private repository: BaseRepository) {
+    // Register command to copy revision to clipboard (used in hover tooltips)
+    this.disposables.push(
+      commands.registerCommand(
+        "svn.copyRevisionToClipboard",
+        async (revision: string) => {
+          await env.clipboard.writeText(revision);
+        }
+      )
+    );
     this.updateRefs().catch(() => {});
   }
 
@@ -159,6 +261,45 @@ export class SvnHistoryProvider implements Disposable {
         parentIds = [String(Number(entry.revision) - 1)];
       }
 
+      // Build tooltip for this history item
+      const tooltip: MarkdownString[] = [];
+
+      // Section 1: Author + date + message
+      const authorSection = new MarkdownString("", true);
+      if (entry.author) {
+        authorSection.appendMarkdown("$(account)&nbsp;");
+        authorSection.appendMarkdown("**");
+        authorSection.appendText(entry.author);
+        authorSection.appendMarkdown("**");
+      }
+      if (entry.date) {
+        const date = new Date(entry.date);
+        if (!isNaN(date.getTime())) {
+          authorSection.appendMarkdown(", $(history)&nbsp;");
+          authorSection.appendText(fromNow(date));
+          authorSection.appendMarkdown(` (${formatDate(date)})`);
+        }
+      }
+      authorSection.appendMarkdown("\n\n---\n\n");
+      authorSection.appendText(entry.msg || `(r${entry.revision})`);
+      tooltip.push(authorSection);
+
+      // Section 2: Short stats with colored action counts
+      if (entry.paths && entry.paths.length > 0) {
+        tooltip.push(buildShortStatsSection(entry.paths));
+      }
+
+      // Section 3: Commands (Copy revision)
+      const commandsSection = new MarkdownString("", true);
+      const copyArgs = [entry.revision];
+      commandsSection.isTrusted = {
+        enabledCommands: ["svn.copyRevisionToClipboard"]
+      };
+      commandsSection.appendMarkdown(
+        `[$(copy) ${l10n.t("Copy Revision")}](command:svn.copyRevisionToClipboard?${encodeURIComponent(JSON.stringify(copyArgs))})`
+      );
+      tooltip.push(commandsSection);
+
       items.push({
         id: entry.revision,
         parentIds,
@@ -166,6 +307,7 @@ export class SvnHistoryProvider implements Disposable {
         message: entry.msg || `(r${entry.revision})`,
         displayId: `r${entry.revision}`,
         author: entry.author,
+        authorIcon: new ThemeIcon("account"),
         timestamp: entry.date ? new Date(entry.date).getTime() : undefined,
         references: [
           {
@@ -179,7 +321,8 @@ export class SvnHistoryProvider implements Disposable {
         statistics:
           entry.paths.length > 0
             ? { files: entry.paths.length, insertions: 0, deletions: 0 }
-            : undefined
+            : undefined,
+        tooltip
       });
     }
 
@@ -243,6 +386,45 @@ export class SvnHistoryProvider implements Disposable {
 
       const entry = entries[0];
 
+      // --- Build multi-section MarkdownString[] tooltip ---
+      const tooltip: MarkdownString[] = [];
+
+      // Section 1: Author + date + message
+      const authorSection = new MarkdownString("", true);
+      if (entry.author) {
+        authorSection.appendMarkdown("$(account)&nbsp;");
+        authorSection.appendMarkdown("**");
+        authorSection.appendText(entry.author);
+        authorSection.appendMarkdown("**");
+      }
+      if (entry.date) {
+        const date = new Date(entry.date);
+        if (!isNaN(date.getTime())) {
+          authorSection.appendMarkdown(", $(history)&nbsp;");
+          authorSection.appendText(fromNow(date));
+          authorSection.appendMarkdown(` (${formatDate(date)})`);
+        }
+      }
+      authorSection.appendMarkdown("\n\n---\n\n");
+      authorSection.appendText(entry.msg || `(r${entry.revision})`);
+      tooltip.push(authorSection);
+
+      // Section 2: Short stats with colored action counts
+      if (entry.paths && entry.paths.length > 0) {
+        tooltip.push(buildShortStatsSection(entry.paths));
+      }
+
+      // Section 3: Commands (Copy revision)
+      const commandsSection = new MarkdownString("", true);
+      const copyArgs = [entry.revision];
+      commandsSection.isTrusted = {
+        enabledCommands: ["svn.copyRevisionToClipboard"]
+      };
+      commandsSection.appendMarkdown(
+        `[$(copy) ${l10n.t("Copy Revision")}](command:svn.copyRevisionToClipboard?${encodeURIComponent(JSON.stringify(copyArgs))})`
+      );
+      tooltip.push(commandsSection);
+
       return {
         id: entry.revision,
         parentIds: [],
@@ -251,6 +433,11 @@ export class SvnHistoryProvider implements Disposable {
         displayId: `r${entry.revision}`,
         author: entry.author,
         timestamp: entry.date ? new Date(entry.date).getTime() : undefined,
+        authorIcon: new ThemeIcon("account"),
+        statistics:
+          entry.paths.length > 0
+            ? { files: entry.paths.length, insertions: 0, deletions: 0 }
+            : undefined,
         references: [
           {
             id: `refs/svn/r${entry.revision}`,
@@ -260,15 +447,7 @@ export class SvnHistoryProvider implements Disposable {
             icon: new ThemeIcon("git-commit")
           }
         ],
-        tooltip: new MarkdownString(
-          [
-            `**r${entry.revision}** by ${entry.author}`,
-            "",
-            entry.msg,
-            "",
-            `*${entry.date ? new Date(entry.date).toLocaleString() : ""}*`
-          ].join("\n")
-        )
+        tooltip
       };
     } catch {
       return undefined;

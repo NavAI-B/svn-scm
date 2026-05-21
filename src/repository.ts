@@ -13,6 +13,7 @@ import {
   SourceControlInputBox,
   TextDocument,
   Uri,
+  l10n,
   window,
   workspace
 } from "vscode";
@@ -44,7 +45,7 @@ import { SvnHistoryProvider } from "./historyProvider";
 import { svnErrorCodes } from "./svn";
 import { Repository as BaseRepository } from "./svnRepository";
 import { toSvnUri } from "./uri";
-import { t } from "./i18n";
+// i18n migrated to l10n
 import {
   anyEvent,
   dispose,
@@ -230,8 +231,9 @@ export class Repository implements IRemoteRepository {
     );
 
     this.sourceControl.count = 0;
-    this.sourceControl.inputBox.placeholder =
-      "Message (press Ctrl+Enter to commit)";
+    this.sourceControl.inputBox.placeholder = l10n.t(
+      "Message (press Ctrl+Enter to commit)"
+    );
     this.sourceControl.acceptInputCommand = {
       command: "svn.commitWithMessage",
       title: "commit",
@@ -258,19 +260,19 @@ export class Repository implements IRemoteRepository {
 
     this.stagedChanges = this.sourceControl.createResourceGroup(
       "staged",
-      t("stagedChanges")
+      l10n.t("Wait for commit")
     ) as ISvnResourceGroup;
     this.changes = this.sourceControl.createResourceGroup(
       "changes",
-      t("changes")
+      l10n.t("Changes")
     ) as ISvnResourceGroup;
     this.conflicts = this.sourceControl.createResourceGroup(
       "conflicts",
-      t("conflicts")
+      l10n.t("Conflicts")
     ) as ISvnResourceGroup;
     this.unversioned = this.sourceControl.createResourceGroup(
       "unversioned",
-      t("unversioned")
+      l10n.t("Unversioned")
     ) as ISvnResourceGroup;
 
     this.changes.hideWhenEmpty = true;
@@ -725,7 +727,7 @@ export class Repository implements IRemoteRepository {
         // Prefix 'changelist-' to prevent double id with 'change' or 'external'
         group = this.sourceControl.createResourceGroup(
           `changelist-${changelist}`,
-          t("changelist", changelist)
+          l10n.t('Changelist "{0}"', changelist)
         ) as ISvnResourceGroup;
         group.hideWhenEmpty = true;
         this.disposables.push(group);
@@ -746,7 +748,7 @@ export class Repository implements IRemoteRepository {
 
       this.unversioned = this.sourceControl.createResourceGroup(
         "unversioned",
-        t("unversioned")
+        l10n.t("Unversioned")
       ) as ISvnResourceGroup;
 
       this.unversioned.hideWhenEmpty = true;

@@ -3,7 +3,7 @@
 'use strict';
 
 const path = require('path');
-const IGNORED = ['jschardet', 'iconv-lite', 'iconv-lite-umd', './vscodeModules'];
+const IGNORED = ['jschardet', 'iconv-lite', 'iconv-lite-umd'];
 /**@type {import('webpack').Configuration}*/
 const config = {
   target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
@@ -22,6 +22,12 @@ const config = {
   externals: [
     {
         vscode: 'commonjs vscode' // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
+    },
+    ({ request }, callback) => {
+      if (IGNORED.some(mod => request === mod)) {
+        return callback(null, 'commonjs ' + request);
+      }
+      callback();
     }
   ],
   resolve: {
