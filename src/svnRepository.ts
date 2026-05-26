@@ -198,9 +198,11 @@ export class Repository {
   }
 
   /**
-   * Get the maximum revision number across all items in the working copy.
-   * Uses `svnversion` which is fast and outputs e.g. "4123:4168MS".
-   * TortoiseSVN shows the highest revision in a mixed-revision working copy.
+   * Get the last changed revision number in the working copy.
+   * Uses `svnversion -c` which outputs last committed (changed) revisions,
+   * e.g. "4123:4168MS". This ensures the returned revision exists in `svn log`
+   * output for the current directory, even when the working copy has been
+   * updated to a HEAD revision that didn't modify files under this directory.
    */
   public async getMaxRevision(): Promise<string> {
     try {
@@ -212,7 +214,7 @@ export class Repository {
       const output = await new Promise<string>((resolve, reject) => {
         cp.execFile(
           svnversionPath,
-          [this.workspaceRoot],
+          ["-c", this.workspaceRoot],
           {
             encoding: "utf8",
             timeout: 10000

@@ -1,3 +1,11 @@
+## 2.20.1 (2026-05-26)
+
+* **Blame / Annotate** — Adjust margin style
+
+### Bug Fixes
+
+* **SCM History** — Fix history ref pointing to a revision not present in the log when opening a subdirectory of the repository. Use `svnversion -c` to get the last changed revision instead of the current working copy revision.
+
 ## 2.20.0 (2026-05-22)
 
 ### Features

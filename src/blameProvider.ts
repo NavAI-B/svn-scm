@@ -321,7 +321,7 @@ export class BlameProvider implements Disposable {
           contentText: "",
           color: new ThemeColor("editorLineNumber.foreground"),
           backgroundColor: new ThemeColor("editorLineNumber.background"),
-          margin: "0 0 0 0"
+          margin: "0 4px 0 0"
         }
       });
       session.decorationTypes.set("__rev__", revDecoType);
